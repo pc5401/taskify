@@ -2,6 +2,21 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-11 BE-2 VS1 readiness 조사
+
+TO: manager, qa, fe
+RE: BE-1 인계 후 VS1 후속 준비
+
+- 기준 4ee00b2, codex/be2-readiness. agents/be/BE2-PLAN.md에 확정 정책, 승인 공백과 선택지/영향, 작은 구현 단위 A0~A3/B1~B3, DB 없는 검증과 실제 DB 검증 경계를 기록했다.
+- 근거: docs/contract 4개 문서, QA 002 및 cases 목록, BE-1 OUTBOX, apps/api README와 현재 schema/migration/AppModule. 기존 BE-1 검증 기록만 검토했고 새 테스트/설치/DB 실행은 하지 않았다.
+- 기본 컬럼 이름은 feature-spec 3.4의 할 일/하는 중/완료로 확정이다. 이름 승인을 다시 요청할 이유가 없다.
+- 실제 미결: TTL·세션 식별/회전/폐기 범위·로그아웃 즉시성·비밀번호 변경 세션 영향, 기본 color, cursor 순서/동률/경계, 이메일 동일성. JWT 사용 자체와 myRole/limit는 이미 확정이다.
+- 확인 필요: 기존 Prisma 및 SQL의 color default #5534DA는 현 contract에서 승인 근거를 찾지 못했다. 코드 존재를 승인으로 간주하지 않는다. 이번에는 구현/SQL을 수정하지 않았다.
+- TO qa: 기존 001~013은 인증/목록/생성 전체를 덮지 않는다. auth와 내 보드 전용 인수 문장을 먼저 요청한다. mock 성공은 실제 세션 경쟁/보드 생성 rollback 보장이 아니다.
+- TO fe: 업무 HTTP가 없는 상태는 동일하다. BE-1 부팅/404 통과를 인증 API 연동 준비 완료로 해석하지 않는다.
+- 막힌 점: 구현 가능한 계약 기반이 있어도 위 정책 공백과 QA 선행 케이스가 남는다. 상세 계획의 승인 게이트 이후 관리자 배정 단위만 구현한다.
+
+
 ## 2026-10-11 BE-1 전환 및 복구
 
 TO: manager, qa, fe
