@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "module": "commonjs", "lib": ["ES2022", "DOM"],
+    "strict": true, "exactOptionalPropertyTypes": false, "noEmit": true,
+    "skipLibCheck": true, "types": []
+  },
+  "include": ["src/**/*.ts", "checks/**/*.ts"]
+}
