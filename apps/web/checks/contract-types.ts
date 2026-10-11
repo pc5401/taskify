@@ -1,0 +1,11 @@
+import type { Board, BoardListItem, BoardPage, Card, CardWarning } from '../src/contract';
+type Assert<T extends true> = T;
+type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false;
+type RequiredKeys<T> = { [K in keyof T]-?: {} extends Pick<T, K> ? never : K }[keyof T];
+type RequiredCard = Assert<Equal<RequiredKeys<Card>, 'id' | 'boardId' | 'columnId' | 'title' | 'position' | 'blocked' | 'warnings' | 'version' | 'createdAt' | 'updatedAt'>>;
+type RoleOnList = Assert<Equal<BoardListItem['myRole'], 'OWNER' | 'EDITOR' | 'VIEWER'>>;
+type RoleNotOnDetail = Assert<Equal<'myRole' extends keyof Board ? true : false, false>>;
+type ListUsesRole = Assert<Equal<BoardPage['items'][number], BoardListItem>>;
+type WarningIsClosed = Assert<Equal<CardWarning, 'BLOCKED_BY_PREDECESSOR'>>;
+type NoCompleted = Assert<Equal<'completed' extends keyof Card ? true : false, false>>;
+type OptionalNullable = Assert<Equal<Card['description'], string | null | undefined>>;
