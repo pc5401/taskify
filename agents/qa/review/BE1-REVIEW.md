@@ -39,3 +39,13 @@ BE-1 기반 구조는 검토 가능하나 업무 기능 통과는 아니다. QA 
 1. R1 기본 color 승인 출처 확인. R2는 정책 정합성만 확인.
 2. 향후 승인된 DB 검증에서 migration 적용/롤백, 복합 FK 5종, 새 보드 owner 없음, 마지막 owner 변경·삭제·이동·board cascade, 동시 A→B/B→A와 실제 Prisma 예외 metadata 확인.
 3. HTTP 업무 endpoint가 구현된 후 QA001~013을 각각 실행하고 행 불변을 DB와 함께 검증. 현재19 mock 테스트 PASS를 해당 인수 케이스 PASS로 옮기지 않는다.
+
+## FE-1 추가 읽기 검토
+
+대상: 별도 FE worktree `85f7394`, `apps/web/src/contract.ts`, `src/http.ts`, `checks/http.test.cjs`. FE 코드는 수정하지 않았다.
+
+정적 subset 판정: **통과**. `BoardListItem.myRole`은 필수 Role, Board 상세에는 myRole을 추가하지 않았다. Card.blocked와 warnings는 필수이고 warnings 값은 BLOCKED_BY_PREDECESSOR 한 가지다. description/assigneeId/dueAt/predecessorId의 선택·nullable과 Column.wipLimit 선택·nullable가 YAML과 일치한다. Page의 items/nextCursor도 필수다. Card.completed는 없다. UUID/date-time/integer 범위 검증은 타입 선언이 보장하지 않으며 파일도 이를 숨기지 않는다.
+
+읽기 어댑터는 board 목록/상세/cards 경로와 cursor/limit, 호출자 header/credentials/signal 및 ETag를 전달한다. 오류를 빈 목록으로 대체하지 않고 status/body를 보존한다. 응답은 type assertion이므로 유효 JSON이 계약과 다른 모양이어도 차단하지 않는다. 이는 FE-1이 명시적으로 제외한 runtime schema 검증이며 현재 범위 결함으로 판정하지 않는다. 카드 선택 필터 전체를 구현한 client로 주장하지 않는다.
+
+FE의 타입 검사/5개 mock 전송 테스트 PASS는 **FE OUTBOX 보고**이며 QA가 재실행하지 않았다. 축약 fixture에 필수 Board/Card 필드가 모두 없으므로 이5개 결과로 API 스키마 준수를 증명할 수 없다. 실제 browser/backend integration은 **NOT RUN**, QA001~013와 무관하다. 전체 BE/업무 인수 판정은 여전히 보류다.

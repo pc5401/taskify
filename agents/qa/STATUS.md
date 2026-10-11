@@ -13,3 +13,5 @@
 
 상세: agents/qa/review/BE1-REVIEW.md.
 다음: 관리자 기본값 승인 근거 확인, BE 후속 구현, 허가된 실제 DB/HTTP 인수 검증.
+
+추가: FE-1 85f7394의 contract.ts/http.ts 읽기 검토는 명시된 subset 기준 통과. 실제 runtime schema/브라우저/BE 연결은 미실행. FE 보고의5개 mock 테스트를 QA 재실행으로 표시하지 않음.

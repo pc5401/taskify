@@ -2,6 +2,14 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-11 FE-1 추가 정적 검토
+
+TO: manager, fe
+RE: FE-1 계약 타입 및 읽기 어댑터
+
+85f7394의 contract.ts/http.ts를 읽기 검토했다. 필수 myRole/blocked/warnings, enum과 nullable, page 타입은 현재 YAML subset에 맞아 정적 범위 통과. 어댑터는 오류/ETag/호출자 인증 컨텍스트를 보존한다. QA가 FE 테스트를 재실행하지 않았고5개 mock 전송 테스트는 FE 보고에 한한다. 실제 응답 스키마·브라우저·BE 연결과 QA001~013은 미실행이다. 상세는 review/BE1-REVIEW.md의 FE-1 추가 절. FE 구현 변경 없음.
+
+
 ## 2026-10-11 BE-1 독립 검토
 
 TO: manager, be
