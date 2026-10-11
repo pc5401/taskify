@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+enum InviteRole {
+  EDITOR
+  VIEWER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELED
+}
+
+enum NotificationType {
+  INVITED
+  ASSIGNED
+  MENTIONED
+  DUE_SOON
+  OVERDUE
+}
+
+enum ActivityAction {
+  CARD_CREATED
+  CARD_MOVED
+  ASSIGNEE_CHANGED
+  DUE_CHANGED
+  DEPENDENCY_SET
+  DEPENDENCY_CLEARED
+  CHECKLIST_CHANGED
+  CARD_UPDATED
+  CARD_DELETED
+}
+
+model User {
+  id           String @id @default(uuid()) @db.Uuid
+  email        String @unique
+  nickname     String
+  passwordHash String @map("password_hash")
+  avatarUrl    String? @map("avatar_url")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  members      BoardMember[]
+  comments     Comment[]
+  notifications Notification[]
+  createdCards Card[] @relation("Creator")
+  activities   Activity[]
+  @@map("users")
+}
+
+model Board {
+  id          String @id @default(uuid()) @db.Uuid
+  title       String
+  description String?
+  color       String @default("#5534DA")
+  version     Int @default(1)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  members     BoardMember[]
+  columns     Column[]
+  cards       Card[]
+  tags        Tag[]
+  invitations Invitation[]
+  @@map("boards")
+}
+
+model BoardMember {
+  boardId  String @map("board_id") @db.Uuid
+  userId   String @map("user_id") @db.Uuid
+  role     Role
+  joinedAt DateTime @default(now()) @map("joined_at") @db.Timestamptz(3)
+  board    Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  user     User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  assignedCards Card[] @relation("Assignee")
+  @@id([boardId, userId])
+  @@map("board_members")
+}
+
+model Column {
+  id       String @id @default(uuid()) @db.Uuid
+  boardId  String @map("board_id") @db.Uuid
+  title    String
+  position Int
+  wipLimit Int? @map("wip_limit")
+  isDone   Boolean @default(false) @map("is_done")
+  version  Int @default(1)
+  board    Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  cards    Card[]
+  @@unique([id, boardId])
+  @@index([boardId, position])
+  @@map("columns")
+}
+
+model Card {
+  id            String @id @default(uuid()) @db.Uuid
+  boardId       String @map("board_id") @db.Uuid
+  columnId      String @map("column_id") @db.Uuid
+  title         String
+  description   String?
+  creatorId     String @map("creator_id") @db.Uuid
+  assigneeId    String? @map("assignee_id") @db.Uuid
+  predecessorId String? @map("predecessor_id") @db.Uuid
+  dueAt         DateTime? @map("due_at") @db.Timestamptz(3)
+  position      Int
+  version       Int @default(1)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  board         Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  column        Column @relation(fields: [columnId, boardId], references: [id, boardId], onDelete: NoAction, onUpdate: NoAction, map: "cards_column_board_fk")
+  creator       User @relation("Creator", fields: [creatorId], references: [id], onDelete: Restrict)
+  assignee      BoardMember? @relation("Assignee", fields: [boardId, assigneeId], references: [boardId, userId], onDelete: NoAction, onUpdate: NoAction, map: "cards_assignee_board_fk")
+  predecessor   Card? @relation("Dependency", fields: [predecessorId, boardId], references: [id, boardId], onDelete: NoAction, onUpdate: NoAction, map: "cards_predecessor_board_fk")
+  successors    Card[] @relation("Dependency")
+  tags          CardTag[]
+  checklist     ChecklistItem[]
+  comments      Comment[]
+  activities    Activity[]
+  @@unique([id, boardId])
+  @@index([columnId, position])
+  @@map("cards")
+}
+
+model Tag {
+  id      String @id @default(uuid()) @db.Uuid
+  boardId String @map("board_id") @db.Uuid
+  name    String
+  board   Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  cards   CardTag[]
+  @@unique([id, boardId])
+  @@map("tags")
+}
+
+model CardTag {
+  cardId  String @map("card_id") @db.Uuid
+  tagId   String @map("tag_id") @db.Uuid
+  boardId String @map("board_id") @db.Uuid
+  card    Card @relation(fields: [cardId, boardId], references: [id, boardId], onDelete: Cascade, onUpdate: NoAction, map: "card_tags_card_board_fk")
+  tag     Tag @relation(fields: [tagId, boardId], references: [id, boardId], onDelete: Cascade, onUpdate: NoAction, map: "card_tags_tag_board_fk")
+  @@id([cardId, tagId])
+  @@map("card_tags")
+}
+
+model Invitation {
+  id            String @id @default(uuid()) @db.Uuid
+  boardId       String @map("board_id") @db.Uuid
+  inviteeEmail  String @map("invitee_email")
+  requestedRole InviteRole @map("requested_role")
+  status        InvitationStatus @default(PENDING)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  respondedAt   DateTime? @map("responded_at") @db.Timestamptz(3)
+  board         Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  @@map("invitations")
+}
+
+model ChecklistItem {
+  id       String @id @default(uuid()) @db.Uuid
+  cardId   String @map("card_id") @db.Uuid
+  content  String
+  done     Boolean @default(false)
+  position Int
+  card     Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  @@map("checklist_items")
+}
+
+model Comment {
+  id        String @id @default(uuid()) @db.Uuid
+  cardId    String @map("card_id") @db.Uuid
+  authorId  String @map("author_id") @db.Uuid
+  body      String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  card      Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  author    User @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  @@map("comments")
+}
+
+model Activity {
+  id        String @id @default(uuid()) @db.Uuid
+  cardId    String @map("card_id") @db.Uuid
+  actorId   String? @map("actor_id") @db.Uuid
+  action    ActivityAction
+  metadata  Json @default("{}")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  card      Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  actor     User? @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  @@map("activities")
+}
+
+model Notification {
+  id            String @id @default(uuid()) @db.Uuid
+  userId        String @map("user_id") @db.Uuid
+  type          NotificationType
+  resourceType  String @map("resource_type")
+  resourceId    String @map("resource_id") @db.Uuid
+  dueAtSnapshot DateTime? @map("due_at_snapshot") @db.Timestamptz(3)
+  readAt        DateTime? @map("read_at") @db.Timestamptz(3)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  user          User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
