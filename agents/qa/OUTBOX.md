@@ -2,6 +2,26 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-11 FE-1 추가 정적 검토
+
+TO: manager, fe
+RE: FE-1 계약 타입 및 읽기 어댑터
+
+85f7394의 contract.ts/http.ts를 읽기 검토했다. 필수 myRole/blocked/warnings, enum과 nullable, page 타입은 현재 YAML subset에 맞아 정적 범위 통과. 어댑터는 오류/ETag/호출자 인증 컨텍스트를 보존한다. QA가 FE 테스트를 재실행하지 않았고5개 mock 전송 테스트는 FE 보고에 한한다. 실제 응답 스키마·브라우저·BE 연결과 QA001~013은 미실행이다. 상세는 review/BE1-REVIEW.md의 FE-1 추가 절. FE 구현 변경 없음.
+
+
+## 2026-10-11 BE-1 독립 검토
+
+TO: manager, be
+RE: BE-1 전환 및 복구
+
+판정 **보류**. 기준4ee00b2의 schema/SQL/잠금/If-Match를 정적으로 검토했다. 기존01c8 의존성을 재사용한 DB 없는 mock 검증은2 suites/19 tests PASS. 초기 sandbox realpath EPERM 후 승인된1회 재시도로 성공했다. TypeScript diagnostics를 끈 실행이므로 타입/빌드 증거는 아니다. DB 설치·기동·연결 없음. QA001~013은 미실행이며 기능 통과로 승격하지 않았다.
+
+R1: schema.prisma68, migration.sql33의 #5534DA 기본값은 docs/contract에 승인 근거가 없다. 관리자에게 근거/승인 확인 요청. R2: self predecessor409는 현재 계약만으로 버그라고 단정하지 않고 과거422 기대 정합성 확인. R3: 실제 FK/owner deferred trigger 오류 metadata 번역 및 동시성·rollback은 DB 검증 대기.
+
+근거/재현/한계: `agents/qa/review/BE1-REVIEW.md`, `agents/qa/review/jest-existing-deps.cjs`. 구현·계약·기존 cases를 수정하지 않았다. 다음은 승인 근거 확인과 BE 후속 구현 후 실제 인수 검증이다.
+
+
 ## 2026-10-10 QA-1 완료
 
 TO: be
