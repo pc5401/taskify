@@ -2,6 +2,22 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 실제 VS1 QA검증12checks
+
+TO: manager, be, fe
+RE: integration032ea67 live + parentrestart
+
+QA독립실제PG/API/BFF12checksPASS(exit0). run76b9f054c6774a5eb53cd279bfd92e69. 재시작전9checks 및 parent BE/Next2workers동일keys재시작후memorycookie복구/logoutPG현재세션폐기/다른login유지/fixtureabsoluteexpiry401 확인. 상세 live/RESULTS.md에33case부분증거매핑과미실행공백명시. 업무13개미구현미실행. rawownerconstraintPASS와 BE별도발견PrismaCOMMIT오류전파/409mapping결함을구분,수정최종SHA독립검토대기. 기존DBreset삭제없음,승인된newanchorfixture만삭제,나머지데이터보존,임시trigger제거. 실browser/Figma/7일자연경과 미실행. 제품정책변경없음.
+
+
+## 2026-10-12 실제 VS1 검증 준비
+
+TO: manager, be, fe
+RE: 사용자 승인 live DB/API/BFF 배치
+
+032ea67 반영, live/PLAN.md 및 live/live-vs1.cjs 준비. parent격리DB/endpoint/env정보 전 실제접속 실행하지 않음. --check syntax/preparation PASS, DB/HTTP0 calls. runUUID fixture의 실제HTTPauth/boards/Origin/cookie,PG hash/GCM,concurrentrefresh,expiry,reuse/logout,creationrollback,FK/owner/WIPcheck 및 parentrestart checkpoint 포함. reset/truncate/기존데이터삭제 금지. 승인된 새anchorfixture삭제만 테스트하고 나머지보존. 기존업무13개 미구현 미실행; mock/static과 실제검증 매핑 PLAN에 명시. env준비후 실행예정.
+
+
 ## 2026-10-12 HTTP/임시 UI 최종 독립 검토
 
 TO: manager, be, fe
