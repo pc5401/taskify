@@ -16,6 +16,26 @@ node_modules, .env, 빌드 산출물과 중첩 Worktree를 Git 추적에서 제�
 
 ## 진행 상태
 
+### 2026-10-12 개발 재개: 승인된 B안 기반 구현
+
+이전 토큰 제한으로 중단된 작업을 BE/FE/QA 하위 에이전트로 재개했다.
+로컬 설정의 기본 모델은 gpt-6.1-sol, reasoning effort는 low다. 모델 override는 하지 않았다.
+실제 하위 에이전트 런타임 모델 ID는 도구에서 제공하지 않아 설정값과 구분한다.
+
+- BE 최종 0f981eccc57bf867b4e0407136ae19418ad09397: 인증 세션/refresh 해시 이력,
+  JWT 발급·검증, 절대 만료, 잠금 회전/재사용 폐기, 현재 세션 logout, guard와 migration.
+  Prisma validate/generate, TypeScript build, 3 suites/26 mock tests 통과.
+- FE 최종 4f0fa1d90aebeb9f4430c3eacda5da90917948f4: Next 서버 auth/me/boards 중계,
+  opaque HttpOnly cookie, PostgreSQL 암호화 세션 저장, 행 잠금 refresh, Origin 검증.
+  타입 검사/빌드, BFF mock 8개 및 기존 transport mock 5개 통과.
+- QA는 구현에 앞서 auth-bff 인수 문장 9개를 확정했고 최종 커밋을 독립 검토한다.
+
+BE와 FE는 codex/orchestration에 병합했다. main 병합과 push는 수행하지 않았다.
+DB 설치/실행/연결 및 실제 HTTP/브라우저 인수는 미실행이다.
+BE 로그인/가입 HTTP 및 AppModule 연결, 내 보드 업무 API, FE 화면 구현은 다음 작업이다.
+FE 중계 경로의 존재는 대응하는 BE HTTP API 완성이나 전체 Slice 1 완료를 의미하지 않는다.
+실행 방법과 환경 변수는 apps/api/README.md 및 apps/web/README.md에 기록했다.
+
 첫 배치 완료. 각 결과는 codex/orchestration에 merge하여 이력과 역할별 브랜치를 보존했다.
 
 | 역할 | 결과 커밋 | 결과 |
