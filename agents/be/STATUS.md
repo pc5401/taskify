@@ -8,5 +8,6 @@
 명시 검증 P2010/23514 exact LAST_OWNER 오류만409 번역. SQL 정책 변경 없음.
 최종: TypeScript build PASS,7 suites/40 tests PASS,실제 DB regression11/11 PASS.
 산출물: lifecycle/API/real regression scripts, LIVE-DB-REPORT.md 및 README.
-DB는 QA용 유지, API현재 unavailable. reset/drop/delete 없음. 종료는 부모 조율.
+QA 독립 Owner5/5 PASS 이후 부모 지시에 따라 DB fast stop 정상 종료.
+55432 ECONNREFUSED, API3301/Next3002/3003 unavailable. Data/fixtures 보존, reset/drop/delete 없음.
 내부 transaction 검증이며 미구현 업무 HTTP/전체 QA 인수 통과가 아님.
