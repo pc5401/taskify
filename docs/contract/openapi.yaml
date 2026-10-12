@@ -224,6 +224,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Board'
           description: Board visible to members. ETag is the board version.
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/InvalidInput'
         '403':
           $ref: '#/components/responses/NotMember'
     patch:
@@ -494,6 +498,12 @@ paths:
                     items:
                       $ref: '#/components/schemas/Column'
           description: Columns ordered by position. Cards are not included.
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/NotMember'
+        '422':
+          $ref: '#/components/responses/InvalidInput'
     post:
       tags:
         - Columns
@@ -630,6 +640,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/CardPage'
           description: Cards on boards the caller belongs to, ordered by position.
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/NotMember'
+        '422':
+          $ref: '#/components/responses/InvalidInput'
   /columns/{columnId}/cards:
     post:
       tags:
