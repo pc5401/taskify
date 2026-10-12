@@ -2,6 +2,25 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 Cycle02 조회·권한 구현 및 BE 검증
+
+TO: manager, qa, fe
+RE: QA 선행5e3e6bd 및 사용자 조회정책 전체승인
+
+- 조사 CYCLE02-PREP.md 이후 사용자 승인 및 부모계약작성배정에 따라 contract1cc619f 기록.
+  OpenAPI 세조회401/403/422보완. QA 선행문서를 읽은 뒤 GETdetail/columns/cards만 추가.
+- 모든 route sessionguard+membership,role3종 허용. missing/nonmember/pending403,
+  UUID/query422,invalidsession401. 상세 Board+ETag,컬럼items,카드CardPage 공개projection.
+- positionASC/idASC,AND/exacttag,valid foreign/unknown IDs empty. cursor board/filter binding 및
+  position/id경계로 deletedanchor계속,malformed/mismatch422. nullable DBnull보존.
+  blocked직접선행컬럼기준,warnings blocked+현재done만. 저장필드/쓰기route추가없음.
+- Build PASS,9 suites49 tests PASS(새 unit6/NestHTTP3). 실제DB/API 자체8checks PASS,
+  parent-managed preservedcluster55432/API3301,새 runprefix58ffe27d-581d-4c19-b525-19db2ddc7250.
+  승인runanchor만삭제,나머지fixture보존/reset없음. schema/migration 변경없음.
+- CYCLE02-RESULT.md 및 README 인계. 자체BE증거와 독립QA/browser/Figma를 구분;
+  기능전체QA통과주장없음. runtime최종종료는부모조율,main/push없음.
+
+
 ## 2026-10-12 BE 검증 서버 정상 종료
 
 TO: manager, qa, fe
