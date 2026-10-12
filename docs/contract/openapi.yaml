@@ -669,12 +669,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Card'
           description: Card created after the destination column lock and WIP check. ETag is the card version.
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
         '403':
           $ref: '#/components/responses/Forbidden'
         '409':
           $ref: '#/components/responses/WipExceeded'
         '422':
-          $ref: '#/components/responses/CrossBoard'
+          $ref: '#/components/responses/CardWriteInvalid'
   /cards/{cardId}:
     parameters:
       - $ref: '#/components/parameters/cardId'
@@ -765,12 +767,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Card'
           description: Card moved. warnings may include BLOCKED_BY_PREDECESSOR. ETag is the new card version.
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
         '403':
           $ref: '#/components/responses/Forbidden'
         '409':
-          $ref: '#/components/responses/WipExceeded'
+          $ref: '#/components/responses/CardMoveConflict'
         '422':
-          $ref: '#/components/responses/CrossBoard'
+          $ref: '#/components/responses/CardWriteInvalid'
         '428':
           $ref: '#/components/responses/IfMatchRequired'
   /cards/{cardId}/dependency:
@@ -1205,6 +1209,28 @@ components:
             code: INVALID_INPUT
             message: 입력값이 올바르지 않습니다.
             details: {}
+    CardWriteInvalid:
+      description: INVALID_INPUT for malformed input or invalid target; CROSS_BOARD for links outside this board
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            invalid:
+              value: { code: INVALID_INPUT, message: 입력값이 올바르지 않습니다., details: {} }
+            crossBoard:
+              value: { code: CROSS_BOARD, message: 다른 보드의 데이터와 연결할 수 없습니다., details: {} }
+    CardMoveConflict:
+      description: WIP_LIMIT_EXCEEDED or VERSION_CONFLICT; rejected move does not change card data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            wip:
+              value: { code: WIP_LIMIT_EXCEEDED, message: 이 컬럼의 한도를 초과했습니다., details: {} }
+            version:
+              value: { code: VERSION_CONFLICT, message: 다른 수정이 먼저 반영되었습니다., details: {} }
     EmailTaken:
       description: Email already registered
       content:
