@@ -47,3 +47,41 @@ test('card full pagination maintains exact filters, order and computed fields; d
 });
 test('repeated cursor is an error instead of an incomplete-success/infinite loop',async()=>{let calls=0;const api=createBrowserApi(async()=>{calls++;return Response.json({items:[],nextCursor:'repeat'});});await assert.rejects(api.allCards(id),CardPaginationError);assert.equal(calls,2);});
 test('aborted card pagination stops before requesting another page',async()=>{const controller=new AbortController();let calls=0;const api=createBrowserApi(async()=>{calls++;controller.abort();return Response.json({items:[],nextCursor:'next'});});await assert.rejects(api.allCards(id,{},controller.signal));assert.equal(calls,1);});
+
+test('write targets reject injection and non-POST, Origin refusal precedes session store',async()=>{
+ const targets=[`/columns/${id}/cards`,`/cards/${id}/move`];
+ const store={locked:async()=>{throw Error('must not touch store');}};
+ const app=new Bff({key,origin:'http://web.test',apiBase:'http://api.test/v1',production:false},store,async()=>{throw Error('must not fetch');});
+ for(const target of targets){
+  assert.equal(readTarget(new Request('http://web.test/api/x'),target).status,405);
+  for(const origin of [undefined,'http://evil.test']) assert.equal((await app.handle(new Request('http://web.test/api/x',{method:'POST',headers:origin?{Origin:origin}:{}}),target)).status,403);
+ }
+ for(const target of ['/columns/invalid/cards',`/cards/${id}/../me`,`/columns/${id}/move`]) assert.equal(readTarget(new Request('http://web.test/api/x',{method:'POST'}),target).status,422);
+});
+
+test('write BFF preserves body, If-Match, error/current ETag and only server bearer',async()=>{
+ const store={locked:async(_hash,run)=>run({encrypted_tokens:encrypt({accessToken:'server-token',refreshToken:'server-refresh'},key,hash),expires_at:new Date(Date.now()+60000),revoked_at:null},{save:async()=>{},revoke:async()=>{}})};
+ for(const [target,status,code] of [[`/columns/${id}/cards`,201,undefined],[`/cards/${id}/move`,200,undefined],[`/cards/${id}/move`,409,'VERSION_CONFLICT'],[`/cards/${id}/move`,409,'WIP_LIMIT_EXCEEDED'],[`/cards/${id}/move`,422,'CROSS_BOARD'],[`/cards/${id}/move`,428,'IF_MATCH_REQUIRED']]){
+  const body=JSON.stringify({title:' raw ',tagNames:[' Tag '],toColumnId:other});
+  const app=new Bff({key,origin:'http://web.test',apiBase:'http://api.test/v1',production:false},store,async(url,init)=>{assert.equal(url,`http://api.test/v1${target}`);assert.equal(init.headers.get('authorization'),'Bearer server-token');assert.equal(init.headers.get('if-match'),'"7"');assert.equal(init.body,body);return Response.json(code?{code,details:{version:8}}:{id,version:7},{status,headers:{ETag:'"7"'}});});
+  const response=await app.handle(new Request('http://web.test/api/x',{method:'POST',headers:{Origin:'http://web.test',cookie:`taskify_session=${cookie}`,Authorization:'Bearer forged','If-Match':'"7"'},body}),target);
+  assert.equal(response.status,status);assert.equal(response.headers.get('etag'),'"7"');assert.equal((await response.json()).code,code);
+ }
+});
+
+test('browser writes preserve optional raw fields, quoted If-Match, response ETag; role follows all pages',async()=>{
+ let calls=0;
+ const api=createBrowserApi(async(url,init)=>{
+  calls++;assert.equal(init.credentials,'same-origin');assert.equal(new Headers(init.headers).has('authorization'),false);
+  if(init.method==='POST'){
+   if(url.includes('/columns/')) assert.deepEqual(JSON.parse(init.body),{title:' raw ',description:' ',assigneeId:other,dueAt:null,predecessorId:id,tagNames:[' Tag ','tag']});
+   else {assert.equal(new Headers(init.headers).get('if-match'),'"7"');assert.deepEqual(JSON.parse(init.body),{toColumnId:other,beforeCardId:null});}
+   return Response.json({id,version:7},{headers:{ETag:'"7"'}});
+  }
+  return Response.json(url.includes('cursor=')?{items:[{id,myRole:'VIEWER'}],nextCursor:null}:{items:[{id:other,myRole:'OWNER'}],nextCursor:'next'});
+ });
+ assert.equal((await api.createCard(id,{title:' raw ',description:' ',assigneeId:other,dueAt:null,predecessorId:id,tagNames:[' Tag ','tag']})).etag,'"7"');
+ assert.equal((await api.moveCard(id,{toColumnId:other,beforeCardId:null},'"7"')).card.version,7);
+ assert.equal(await api.boardRole(id),'VIEWER');assert.equal(calls,4);
+ const upper=createBrowserApi(async()=>Response.json({items:[{id:'abcdefab-0000-4000-8000-000000000001',myRole:'EDITOR'}],nextCursor:null}));assert.equal(await upper.boardRole('ABCDEFAB-0000-4000-8000-000000000001'),'EDITOR');
+});

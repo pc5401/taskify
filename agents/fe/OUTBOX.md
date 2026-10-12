@@ -1,3 +1,12 @@
+## 2026-10-13 Cycle03 creation/movement handoff
+
+TO: manager, be, qa
+- QA first6e3b8e9/final8d9294d and approved64f7ae9 read before final implementation.
+- Added fixed UUID POST BFF create/move, server-only credentials and existing Origin rejection, If-Match forwarding, ETag/error status relay. No auth policy relaxation.
+- Browser create optional fields preserved; movement uses current quoted version and Card/ETag envelope. myRole search traverses board-list pages, final permission stays server.
+- Temporary create form and select movement, full reload on success/no-op/409/428, persistent conflict notice, synchronous submission guard. Filtered candidates explicitly stated. No invented member endpoint/raw UUID assignment UI.
+- mock22/22 and typecheck PASS; production build PASS. Actual concurrency/DB/browser evidence belongs to independent QA; this mock evidence does not replace it.
+- User approved temporary UI after existing Figma Starter limit; precise correction remains follow-up.
 # FE OUTBOX
 
 최신이 위다. 지우지 않는다.
@@ -167,3 +176,5 @@ TO: manager
 - URL limit 원문을 digits 및 integer 1..100으로 검증한 뒤 변환한다. UI와 BFF 모두 1e1/공백/+10/소수/hex를 422로 처리한다.
 - UI parser와 BFF의 동일 입력 회귀 검사 추가: mock 19/19 및 typecheck PASS. Next production build PASS.
 - 독립 QA 실제 HTTP 읽기 19 PASS는 부모 보고 수신. 브라우저 unavailable이며 SSR shell HTTP와 실제 click/visual 검증을 구분한다. 임시 UI의 Figma 정밀 보정은 후속이다.
+
+Cycle03 final note: production build PASS (including no-op status notice). Subsequent UUID role comparison accepts uppercase UUID with regression mock22/22 + typecheck PASS. Tag blank lines are preserved and server422 applies. Live dev picks up source; actual QA and browser evidence remain separately recorded.

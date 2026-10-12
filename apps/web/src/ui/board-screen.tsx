@@ -7,12 +7,15 @@ import { BrowserApiError, CardPaginationError, createBrowserApi } from '../brows
 import { parseBoardFilters } from '../board-filters';
 import type { Board, Card, Column } from '../contract';
 import { buttonClass, ErrorMessage, inputClass } from './shared';
+import { CardWritePanel } from './card-write-panel';
+import type { Role } from '../contract';
 const api = createBrowserApi();
-type LoadedBoard = { board: Board; columns: Column[]; cards: Card[]; requestKey: string };
+type LoadedBoard = { board: Board; columns: Column[]; cards: Card[]; role: Role | null; requestKey: string };
 export function BoardScreen({ boardId }: { boardId: string }) {
   const router = useRouter(), params = useSearchParams(), search = params.toString();
   const [loaded, setData] = useState<LoadedBoard | null>(null), [loading, setLoading] = useState(true);
   const data = loaded?.requestKey === `${boardId}?${search}` ? loaded : null;
+  const [writeError, setWriteError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null), [denied, setDenied] = useState(false), [reload, setReload] = useState(0);
   useEffect(() => {
     const controller = new AbortController(); setLoading(true); setData(null); setError(null); setDenied(false);
@@ -24,7 +27,8 @@ export function BoardScreen({ boardId }: { boardId: string }) {
         const board = await api.board(boardId, controller.signal);
         const columns = await api.columns(boardId, controller.signal);
         const cards = await api.allCards(boardId, filters, controller.signal);
-        if (!controller.signal.aborted) setData({ board, columns: columns.items, cards, requestKey: `${boardId}?${search}` });
+        const role = await api.boardRole(boardId, controller.signal);
+        if (!controller.signal.aborted) setData({ board, columns: columns.items, cards, role, requestKey: `${boardId}?${search}` });
       } catch (failure) {
         if (controller.signal.aborted) return;
         if (failure instanceof BrowserApiError && failure.status === 401) router.replace('/login');
@@ -47,7 +51,7 @@ export function BoardScreen({ boardId }: { boardId: string }) {
     <div className="min-w-0"><header className="flex h-[72px] items-center border-b border-line bg-white px-6 text-sm lg:px-10"><Link href="/boards" className="text-muted hover:text-brand">Workspace / 내 보드</Link>{data && <span className="ml-2 truncate">/ {data.board.title}</span>}</header>
     <main className="px-6 py-8 lg:px-[46px] lg:py-10">
       {loading && <p role="status" className="py-8 text-muted">보드와 카드 목록을 불러오는 중…</p>}
-      <ErrorMessage message={error} />
+      <ErrorMessage message={error} />{writeError && <p role="status" className="rounded-lg border border-line bg-white p-3 text-sm">{writeError}</p>}
       {error && <div className="mt-4 flex gap-5"><Link href="/boards" className="text-sm font-semibold text-brand">내 보드로</Link>{!denied && <button onClick={() => setReload(v => v + 1)} className="text-sm font-semibold text-brand">다시 시도</button>}<Link href={`/boards/${encodeURIComponent(boardId)}`} className="text-sm font-semibold text-brand">필터 초기화</Link></div>}
       {!loading && data && <><h1 className="break-words text-3xl font-bold">{data.board.title}</h1><p className="mt-3 text-sm text-muted">{data.board.description || '컬럼과 카드로 팀의 작업 진행 상황을 확인합니다.'}</p>
         <form onSubmit={filter} className="my-8 flex flex-wrap items-end gap-4" aria-label="카드 필터" key={search}>
@@ -56,6 +60,7 @@ export function BoardScreen({ boardId }: { boardId: string }) {
           <label className="text-sm"><span className="flex items-center gap-2"><input name="tagEnabled" type="checkbox" defaultChecked={params.has('tag')} />태그 이름 정확 일치</span><input name="tag" className={inputClass} defaultValue={params.get('tag') ?? ''} placeholder="태그 이름" /></label>
           <button className={buttonClass}>필터 적용</button><Link href={`/boards/${encodeURIComponent(boardId)}`} className="py-3 text-sm font-semibold text-brand">초기화</Link>
         </form>
+        {(data.role === 'OWNER' || data.role === 'EDITOR') && <CardWritePanel columns={data.columns} cards={data.cards} refresh={message => { setWriteError(message ?? null); setReload(v => v + 1); }} unauthenticated={() => router.replace('/login')} forbidden={() => { setData(null); setDenied(true); setError('카드를 변경할 권한이 없습니다.'); }} />}
         {data.columns.length === 0 ? <p className="rounded-xl border border-dashed border-line bg-white p-10 text-muted">표시할 컬럼이 없습니다.</p> : <div className="flex gap-4 overflow-x-auto pb-6" aria-label="읽기 칸반">
           {data.columns.map(column => { const cards = data.cards.filter(card => card.columnId === column.id); return <section key={column.id} className="w-[316px] shrink-0 rounded-xl border border-line bg-white p-4" aria-label={`${column.title} 컬럼`}><header className="mb-5 flex items-center gap-2"><span className="h-5 w-1.5 rounded bg-brand" aria-hidden="true" /><h2 className="font-semibold">{column.title}</h2><span className="ml-auto rounded-md bg-brand-light px-2 py-1 text-xs text-brand">{cards.length}</span></header>{cards.length === 0 ? <p className="py-8 text-center text-sm text-muted">표시할 카드가 없습니다.</p> : <ul className="space-y-4">{cards.map(card => <li key={card.id} className="rounded-xl border border-line p-4"><div className="mb-3 flex flex-wrap gap-2">{card.tagNames?.map(tag => <span key={tag} className="rounded-md bg-brand-light px-2 py-1 text-xs text-brand">{tag}</span>)}</div><h3 className="break-words text-sm font-semibold">{card.title}</h3>{card.blocked && <p className="mt-3 text-xs text-muted">선행 작업 대기</p>}{card.warnings.includes('BLOCKED_BY_PREDECESSOR') && <p className="mt-2 text-xs text-amber-800">완료 컬럼의 카드에 미완료 선행 작업이 있습니다.</p>}<div className="mt-5 space-y-1 text-xs text-muted">{card.dueAt && <p>마감 {new Date(card.dueAt).toLocaleDateString('ko-KR')}</p>}{card.assigneeId && <p>담당자 지정됨</p>}</div></li>)}</ul>}</section>; })}
         </div>}
@@ -63,4 +68,3 @@ export function BoardScreen({ boardId }: { boardId: string }) {
     </main></div>
   </div>;
 }
-

@@ -211,7 +211,7 @@ compute membership policy or add myRole to Board. Board/columns/all card pages
 must all succeed before content renders. 403 displays access denial without
 partial content;401 redirects login;422/loading/empty/other errors are distinct.
 Old content is scoped to the board+filter request key and aborted on changes.
-No card creation/move/detail-edit buttons or invented assignee names appear.
+Cycle02 originally excluded writes. Cycle03 adds creation and movement below; detail editing and invented assignee names remain excluded.
 
 The browser client allCards follows every opaque nextCursor, retains all filters
 and AbortSignal, preserves server order, deduplicates IDs, and errors on repeated
@@ -225,3 +225,32 @@ Validation: mock18/18 and TypeScript PASS; Next production build PASS (dynamic
 board page and three BFF routes). Live runtime and QA verification are managed
 by parent; current actual-read results are recorded in FE OUTBOX when available.
 Existing cycle01 live41 checks are historical, not cycle02 acceptance evidence.
+
+
+## Cycle03 temporary card creation and movement
+
+POST /api/columns/:columnId/cards and /api/cards/:cardId/move use fixed UUID
+paths and the existing server session, mutation Origin check and token redaction.
+Move passes the quoted current card.version as If-Match; browser client write
+results expose the public Card and response ETag only. Nest remains authoritative
+for role, WIP, version, relationship validation and no-op behavior.
+
+Owner/Editor controls use myRole found across all board-list pages; Viewer or
+unknown role receives no write controls. Successful writes (including no-op),
+409 and 428 reload server data. Conflict messages survive reload. A synchronous
+in-flight guard and disabled fieldsets prevent duplicate form submission.
+Creation supports title, description, local date-time converted to ISO, visible
+predecessor choice and one raw tag per line. The client supports all contract
+optional fields including assigneeId; no member directory endpoint or raw UUID
+assignment flow was invented. Move selects a visible card, destination column
+and visible before-card or end. Under filters, choices are explicitly limited
+to the current result set. No drag/drop, edit/delete or dependency-write scope.
+
+User approved this new temporary UI followed by Figma correction. Existing
+Starter MCP limitation remains; visual fidelity and browser click acceptance
+are pending. Tests are mock HTTP/helper evidence, not real transaction races.
+Cycle03 mock22/22 and typecheck PASS; production build result and parent-managed
+actual QA evidence are recorded in agents/fe/OUTBOX.md.
+
+Tag text is split on newline without trimming; blank lines are empty tag items and receive the server's 422 validation error. The UI does not silently remove them. UUID case is ignored only for membership identity lookup; email and tag strings remain untouched.
+The production build passed with the new routes/UI; the subsequent UUID-case comparison regression passed mock22/22 and typecheck.
