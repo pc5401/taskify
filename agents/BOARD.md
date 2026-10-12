@@ -2,6 +2,11 @@
 
 ## 2026-10-12 HTTP 연결 배치
 
+Figma 참조: https://www.figma.com/design/uUzjrPIuWIrQG8a93G0rTq/
+metadata에서 로그인 6:2, 내 보드 6:24를 확인했으나 상세 context/screenshot은 계정 호출 한도에 막혔다.
+사용자가 “임시 UI 구현 후 디자인 보정”을 명시 승인했다. 이에 metadata와 계약 기반 임시 UI를 구현하며
+Figma 고충실도 일치 검증은 후속으로 남긴다. 제품 정책 변경 승인은 아니다.
+
 QA 인수 문장 선작성 후 BE register/login/refresh/logout, GET /me,
 GET/POST /boards 및 AppModule 연결을 구현한다. FE는 기존 Figma 참조를 확인한 뒤
 로그인/가입/내 보드 화면을 BFF에 연결한다. 디자인 링크는 사용자 답변 대기다.
