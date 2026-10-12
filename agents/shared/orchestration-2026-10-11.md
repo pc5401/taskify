@@ -16,6 +16,34 @@ node_modules, .env, 빌드 산출물과 중첩 Worktree를 Git 추적에서 제�
 
 ## 진행 상태
 
+### 2026-10-12 후속 HTTP 및 임시 화면 배치
+
+사용자가 다음 단계 진행을 요청했고 QA/BE/FE 역할을 재개했다.
+이메일은 입력 그대로 비교하고, 목록은 cursor가 가리키는 보드 삭제 후에도 저장된
+joined_at/board_id 정렬 경계 이후를 조회하도록 명시 승인받았다.
+QA 인수 문장 11개를 먼저 추가했다. login/refresh/GET·POST boards의 기존 입력 오류
+422 INVALID_INPUT 선언 누락을 OpenAPI에 보완했고 QA가 YAML/내부 참조를 검사했다.
+
+사용자 Figma 참조는 https://www.figma.com/design/uUzjrPIuWIrQG8a93G0rTq/ 이다.
+로그인 6:2, 내 보드 6:24 metadata는 확인했지만 상세 context/screenshot은 호출 한도로 거절됐다.
+사용자가 임시 UI 구현 후 디자인 보정을 승인했으므로 화면 구현을 진행한다.
+정확한 Figma 일치, 실제 PostgreSQL 및 브라우저의 전체 로그인 흐름은 별도 검증 대상이다.
+DB 설치/실행/연결, main 병합 및 push는 이 배치에서도 수행하지 않는다.
+
+BE 결과 fb0e6b34dd73501d309296808394fe226e82a4ae를 통합했다.
+register/login/refresh/logout, GET /me, GET/POST /boards와 AppModule 연결이 구현됐다.
+빌드 및 7 suites/38 tests 통과. QA는 실제 Nest 라우트와 mock Prisma를 사용한
+HTTP suite 7개를 독립 재실행해 통과했다. 실제 PostgreSQL commit/rollback 및
+멤버십 필터/동시성/지속성의 입증은 포함하지 않는다.
+
+FE 결과 1d7f12e2e81552b905831ff02ddd4db96e11b0a9를 통합했다.
+Next/Tailwind 로그인/가입/내 보드/생성/logout 임시 UI와 BFF 전용 browser client가 구현됐다.
+타입 검사/빌드, BFF 8개 및 browser client 4개 mock 통과.
+DB 없는 dev HTML smoke에서 /login, /register, /boards 200과 폼/제목을 확인했다.
+테스트 dev 서버는 종료했다. CUA 브라우저 surface가 없어 시각/클릭 검증은 미실행이다.
+기존 Figma 상세 디자인에 맞추는 보정과 실제 DB를 사용하는 전체 흐름 인수가 다음 단계다.
+실행 문서: apps/api/README.md, apps/web/README.md. 역할별 최종 독립 QA 기록은 agents/qa/review에 둔다.
+
 ### 2026-10-12 개발 재개: 승인된 B안 기반 구현
 
 이전 토큰 제한으로 중단된 작업을 BE/FE/QA 하위 에이전트로 재개했다.
