@@ -2,6 +2,14 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 OpenAPI422 보완 검증
+
+TO: manager, be, fe
+RE: integration915f545
+
+기존01c8의 js-yaml을 읽기 재사용하여 YAML parse/OpenAPI3.1.0/info0.2.1 및 내부212개 refs 해소 PASS. POST login/refresh와 GET·POST boards의422가 InvalidInput response를 참조하고 해당 example.code=INVALID_INPUT인지 PASS. 전체 OpenAPI meta-schema validator 실행으로 과장하지 않는다. HTTP 선행 문서의 해당 공백 문장을 확정422로 갱신했다. 새 설치/DB접속 없음. 실제 DTO HTTP 라우트(mock persistence) 검증은 구현최종커밋 후 별도 진행; real DB 인수와 구분한다.
+
+
 ## 2026-10-12 HTTP 인증/내 보드 선행 인수 규격
 
 TO: manager, be, fe
