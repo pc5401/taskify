@@ -11,7 +11,7 @@ S1/S2 로그인 후 S1 access로 POST /auth/logout. 아직 JWT 만료 전인 S1 
 
 ## 기대 HTTP와 저장 상태
 
-logout 성공은 OpenAPI 응답. S1 보호/refresh는 즉시 401. S2 보호/refresh는 유효하게 유지. 모든 보호 경로의 guard는 세션 유효성을 확인한다.
+logout 성공은 204. S1 보호/refresh는 즉시 401 UNAUTHENTICATED. S2 보호/refresh는 유효하게 유지. 모든 보호 경로의 guard는 세션 유효성을 확인한다.
 
 ## 변하지 않아야 하는 필드
 
@@ -20,4 +20,3 @@ S2 폐기 상태/만료/회전 이력 불변. 사용자 전체 세션 폐기 금
 ## 결과: 미실행
 
 인수 규격만 작성. DB 설치/실행/접속 없음. mock 또는 정적 검토로 실제 DB/HTTP/브라우저 인수 통과를 주장하지 않는다.
-

@@ -11,7 +11,7 @@ access 15분, refresh 로그인 기준 절대 7일.
 
 ## 기대 HTTP와 저장 상태
 
-access exp-iat=900초. 회전 후 refresh 만료는 T0+7일을 초과하지 않는다. 절대 만료 이후 refresh와 만료 세션 보호 접근은 401; 세부 오류 code는 OpenAPI Unauthorized 범위에서 확인한다.
+access exp-iat=900초. 회전 후 refresh 만료는 T0+7일을 초과하지 않는다. 절대 만료 이후 refresh와 만료 세션 보호 접근은 401; code=UNAUTHENTICATED (OpenAPI Unauthenticated).
 
 ## 변하지 않아야 하는 필드
 
@@ -20,4 +20,3 @@ access exp-iat=900초. 회전 후 refresh 만료는 T0+7일을 초과하지 않�
 ## 결과: 미실행
 
 인수 규격만 작성. DB 설치/실행/접속 없음. mock 또는 정적 검토로 실제 DB/HTTP/브라우저 인수 통과를 주장하지 않는다.
-
