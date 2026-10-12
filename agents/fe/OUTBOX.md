@@ -2,6 +2,42 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 Next BFF foundation
+
+TO: manager, be, qa
+RE: QA auth-bff first acceptance specifications
+
+Read AUTH-BFF-001..009 before product implementation. apps/web supplies POST
+/api/auth/login|register|logout, GET/PATCH /api/me and GET/POST /api/boards.
+Login/register retain upstream status and expose {user}, never token bundle.
+Mutation missing/mismatched Origin returns 403 FORBIDDEN before store/network.
+Cookie is random 256 bits, persistent HttpOnly/SameSite=Lax/Path=/ and prod
+Secure; lookup SHA-256 only. Initial trusted upstream JWT iat bounds absolute
+seven-day expiry; row expires_at never extends on refresh.
+
+pg production store reads SELECT FOR UPDATE inside transaction, then decrypts
+latest AES-256-GCM tokens using required env key and hash AAD. Concurrent
+workers are serialized; no runtime memory fallback. Upstream Bearer comes
+only from server store, browser Authorization discarded. Fetch 10s/no redirects;
+JSON token field and known-token echo redaction, ETag/status/errors preserved.
+Local 502 transport messages have no invented OpenAPI domain code.
+
+Logout handles access 401 by refresh and retry under lock, then local revoke
+and cookie clear. Network failure reports 502 unconfirmed upstream revocation;
+held upstream access can remain valid. README records cross-service rotation
+cannot be rolled back if BFF PG commit fails, requiring login again and reuse
+revocation risk. No claim of distributed transaction atomicity.
+
+Node24.20.0 / pinned Next16.4.0, React19.3.0, pg8.23.1. Project-local install
+reported zero vulnerabilities. Official nextjs.org blog announced forthcoming
+Oct14 security update; README requires predeployment recheck, not claim installed.
+Typecheck PASS; BFF explicit mock tests8/8 PASS; prior transport mocks5/5 PASS;
+Next production build PASS after sandbox output mkdir EPERM approved local retry.
+No DB installation/start/connect, live Nest business HTTP, browser, or QA actual
+AUTH-BFF acceptance executed. README lists env, BE migration prerequisite and
+ports3002(web)/3000(Nest). QA independent commit review requested.
+
+
 ## 2026-10-11 FE-1 계약 타입 및 읽기 어댑터
 
 TO: manager, be, qa
