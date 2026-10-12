@@ -16,6 +16,33 @@ node_modules, .env, 빌드 산출물과 중첩 Worktree를 Git 추적에서 제�
 
 ## 진행 상태
 
+### 2026-10-12 실제 DB/BFF 검증 및 중단 후 복구
+
+사용자가 격리 개발 DB를 사용하는 후속 단계 진행과 토큰 제한 후 재개를 요청했다.
+기존 PostgreSQL18.4 바이너리를 재사용해 별도 데이터 폴더와
+127.0.0.1:55432/taskify_validation을 준비했고 기존 migration 2개 적용에 성공했다.
+기존 사용자 DB/데이터 및 main은 변경하지 않았다. runtime credential과 데이터는 Git에서 제외한다.
+
+- FE 9bb990c: 실제 BFF/PG 검사 initial29 + recovery12 = 41개 통과.
+- QA 58f99c5: 독립 실제 API/PG/BFF 검사 12개 통과.
+- BE/Next 2개 worker를 같은 환경 키로 재시작한 후 같은 cookie로 로그인 복구,
+  동시 refresh 1회와 절대 만료 유지, logout 후 기존 access 거절을 확인했다.
+- 브라우저 클릭/종료/HTTPS cookie 송신 및 Figma 정밀 일치는 미실행이다.
+  이는 명시 cookie를 보내는 실제 HTTP 검증이며 전체 33개 규격 통과로 확대하지 않는다.
+
+추가 BE 실DB 검사에서 owner trigger COMMIT 오류의 Prisma 전파 문제가 발견됐다.
+TransactionsService 내부에서 작업 완료 후 named owner constraint를 검사해
+409 LAST_OWNER와 rollback을 보장하는 복구를 수행한다. 제품 정책과 DB trigger는 변경하지 않는다.
+결과 상세: agents/fe/LIVE-BFF-RESULT.md 및 agents/qa/live/RESULTS.md.
+
+BE 최종 5df9a1c: named owner constraint를 callback 완료 직전에 검사하고
+그 검사에서 발생한 P2010/23514/LAST_OWNER만 409로 번역한다.
+빌드 및 7 suites/40 tests, 실제 PG 11개 회귀 모두 통과했다.
+5개 교차 보드 FK 오류 번역, Owner 오류 및 행 불변, 부분 생성 rollback,
+반대 방향 동시 의존 중 1개 성공/1개 순환 거절을 내부 서비스에서 확인했다.
+이는 아직 미구현인 role/dependency 업무 HTTP 전체 인수 통과와 구분한다.
+실행 도구와 데이터 보존/종료 방법은 apps/api/README.md 및 agents/be/LIVE-DB-REPORT.md에 기록했다.
+
 ### 2026-10-12 후속 HTTP 및 임시 화면 배치
 
 사용자가 다음 단계 진행을 요청했고 QA/BE/FE 역할을 재개했다.
