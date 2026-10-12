@@ -1,6 +1,6 @@
 import { HttpException } from '@nestjs/common';
 
-export function fail(status: number, code: string, details = {}) {
+export function fail(status: number, code: string, details = {}): never {
   throw new HttpException({ code, message: code, details }, status);
 }
 

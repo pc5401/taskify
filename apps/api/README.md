@@ -145,3 +145,23 @@ all fixture data. Final `stop` requires parent coordination and uses pg_ctl fast
 shutdown, preserving data. Runtime secrets/files must never be printed or committed.
 
 Final coordinated cleanup: pg_ctl fast shutdown completed;55432 refused connections and API3301/Next3002/3003 were unavailable. Data/fixtures retained. Resume the retained cluster with isolated-db.cjs start/connect, never init or reset; the existing ignored environment preserves keys.
+
+## Cycle02 board reads
+
+Added GET /v1/boards/:boardId (Board+ETag), /columns ({items}) and /cards
+(CardPage). All use SessionGuard and membership; OWNER/EDITOR/VIEWER can read,
+missing/nonmember/pending invite403. UUID/query violations422, invalid session401.
+No new creation or movement endpoint and no schema/migration change.
+
+Columns/cards order position ASC/id ASC. Card filters columnId/assigneeId/tag AND
+together; tag exact, valid foreign/unknown IDs empty. Cursor stores board, filters
+and position/id boundary, validates binding and continues after anchor deletion.
+blocked derives from direct predecessor column; warnings appears only for blocked
+cards currently in a done column. Public nullable fields retain null and private
+relations/creator fields are omitted.
+
+Build and9 suites/49 tests passed. `node scripts/live-board-reads.cjs` passed8 actual
+DB/HTTP checks against parent-managed runtime, using new isolated fixtures only.
+The approved run-owned anchor is deleted for cursor validation; all other fixtures
+remain. See agents/be/CYCLE02-RESULT.md. Independent QA/browser acceptance and
+runtime shutdown are separately coordinated; this report does not mark them passed.
