@@ -5,6 +5,9 @@ export interface User { id: string; email: string; nickname: string; createdAt: 
 export interface LoginInput { email: string; password: string }
 export interface RegisterInput extends LoginInput { nickname: string }
 export interface CreateBoardInput { title: string; description?: string; color?: string }
+export interface CreateCardInput { title: string; description?: string; assigneeId?: string | null; dueAt?: string | null; predecessorId?: string | null; tagNames?: string[] }
+export interface MoveCardInput { toColumnId: string; beforeCardId?: string | null }
+export interface CardWriteResult { card: Card; etag: string | null }
 export class BrowserApiError extends Error {
   constructor(readonly status: number, readonly body: Partial<ApiErrorBody> | undefined) {
     super(body?.message ?? `요청을 처리하지 못했습니다 (${status}).`);
@@ -12,6 +15,13 @@ export class BrowserApiError extends Error {
 }
 /** Relative BFF-only requests. The server owns all credentials and token rotation. */
 export function createBrowserApi(fetcher: typeof fetch = fetch) {
+  async function writeCard(path: string, input: CreateCardInput | MoveCardInput, ifMatch?: string, signal?: AbortSignal): Promise<CardWriteResult> {
+    const headers = new Headers({ Accept: 'application/json', 'Content-Type': 'application/json' });
+    if (ifMatch !== undefined) headers.set('If-Match', ifMatch);
+    const response = await fetcher(`/api${path}`, { method: 'POST', headers, body: JSON.stringify(input), credentials: 'same-origin', cache: 'no-store', redirect: 'error', signal });
+    if (!response.ok) { let body; try { body = await response.json(); } catch {} throw new BrowserApiError(response.status, body); }
+    return { card: await response.json(), etag: response.headers.get('etag') };
+  }
   async function request<T>(path: string, method = 'GET', input?: unknown, signal?: AbortSignal): Promise<T> {
     const response = await fetcher(`/api${path}`, {
       method, credentials: 'same-origin', cache: 'no-store', redirect: 'error', signal,
@@ -43,6 +53,20 @@ export function createBrowserApi(fetcher: typeof fetch = fetch) {
       return request<BoardPage>(`/boards${query.size ? `?${query}` : ''}`, 'GET', undefined, signal);
     },
     createBoard: (input: CreateBoardInput, signal?: AbortSignal) => request<Board>('/boards', 'POST', input, signal),
+    createCard: (columnId: string, input: CreateCardInput, signal?: AbortSignal) => writeCard(`/columns/${encodeURIComponent(columnId)}/cards`, input, undefined, signal),
+    moveCard: (cardId: string, input: MoveCardInput, ifMatch: string, signal?: AbortSignal) => writeCard(`/cards/${encodeURIComponent(cardId)}/move`, input, ifMatch, signal),
+    boardRole: async (boardId: string, signal?: AbortSignal) => {
+      const seen = new Set<string>(); let cursor: string | null = null;
+      do {
+        signal?.throwIfAborted();
+        const page: BoardPage = await request<BoardPage>(`/boards${cursor === null ? '' : `?${new URLSearchParams({ cursor })}`}`, 'GET', undefined, signal);
+        const board = page.items.find(item => item.id.toLowerCase() === boardId.toLowerCase()); if (board) return board.myRole;
+        cursor = page.nextCursor;
+        if (cursor !== null && seen.has(cursor)) throw new CardPaginationError('Repeated board cursor');
+        if (cursor !== null) seen.add(cursor);
+      } while (cursor !== null);
+      return null;
+    },
     board: (boardId: string, signal?: AbortSignal) => request<Board>(`/boards/${encodeURIComponent(boardId)}`, 'GET', undefined, signal),
     columns: (boardId: string, signal?: AbortSignal) => request<{ items: Column[] }>(`/boards/${encodeURIComponent(boardId)}/columns`, 'GET', undefined, signal),
     cardPage,
