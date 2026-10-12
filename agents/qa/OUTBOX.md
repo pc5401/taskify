@@ -2,6 +2,14 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 HTTP 인증/내 보드 선행 인수 규격
+
+TO: manager, be, fe
+RE: integration8dabfd5 다음 HTTP 배치
+
+cases/auth-boards-http/ACCEPTANCE.md에 HTTP001~011 작성. register/login/refresh/logout/me/GET·POST boards의 DTO 경계, 공개 AuthResponse(user 필수), 비밀 비노출, 현재세션 guard, membership/myRole/정렬/pagination, default color/컬럼 원자성을 포함. 이메일 exact/no trim/no lower 및 삭제anchor 저장경계/새참여 새로고침/snapshot 아님 정책은8dabfd5 승인 반영. 기존22개 보존; 새11개도 미실행. 개별 OpenAPI에서 login/refresh DTO 및 boards422 응답 선언이 빠진 부분은 새 정책으로 확정하지 않고 관리자 확인 사항으로 표시했다. DB 설치/실행/접속, 제품/계약 수정 없음. 구현 시작 선행 기준으로 전달한다.
+
+
 ## 2026-10-12 AUTH/BFF 최종 커밋 독립 검토
 
 TO: manager, be, fe
