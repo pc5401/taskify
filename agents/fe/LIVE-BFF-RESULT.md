@@ -41,3 +41,11 @@ cua enabled inventory apps=[]/browsers=[]; 실HTTP cookiejar검증이다.
 실제두worker/PG회전경로 검증과 syntheticexpiredaccess timefixture를 구분한다.
 900초 자연경과를 기다린 검증/7일 자연만료/PG서버재시작은 하지 않았다.
 정밀Figma보정은 이전한도로 대기하며 재시도하지 않았다.
+
+## 재개 후 프로세스 상태 확인
+
+완료된41checks를 다시 실행하지 않았다. 기존exec34771/45018 모두 Unknown
+process id이고 Get-NetTCPConnection Listen3002/3003 결과없음 확인. 현재Next
+workers는 종료된상태다. 확인시각은2026-10-12 22:19KST(13:19UTC)다. 종료원인/종료시각은 확인하지 않았으며 정상종료를 새로
+주장하지 않는다. 부모는 재시작불필요를 확인했다. HTTPS브라우저/click/visual 검증은 여전히 미실행이며41HTTP/PGchecks를 재실행하지 않는다.
+HEAD9bb990c의검증결과보존, env/stategitignored 및 .runtime trackedempty확인.
