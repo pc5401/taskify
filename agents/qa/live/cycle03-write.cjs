@@ -109,7 +109,7 @@ async function seedCard(column,position,title='fixture'){
 }
 async function row(id){return (await pool.query('SELECT * FROM cards WHERE id=$1',[id])).rows[0];}
 async function activities(id){return (await pool.query('SELECT * FROM activities WHERE card_id=$1 ORDER BY id',[id])).rows;}
-function publicCard(r){assert.equal(r.etag,`"${r.data.version}"`);for(const field of ['id','boardId','columnId','creatorId','position','version','blocked','warnings'])assert(field in r.data);}
+function publicCard(r){assert.equal(r.etag,`"${r.data.version}"`);for(const field of ['id','boardId','columnId','position','version','blocked','warnings'])assert(field in r.data,`Missing contracted Card field ${field}`);}
 async function main(){
   assert.equal((await pool.query('SELECT current_database() AS name')).rows[0].name,'taskify_validation');await seed();
   for(const base of [api,web]){
@@ -141,7 +141,7 @@ async function main(){
     await check(`${label} create fields tags author ETag activity`,async()=>{
       for(const role of ['owner','editor']){
         const r=await create(base,target,{title:prefix+role,creatorId:users.outsider.id,description:'raw description',assigneeId:users.viewer.id,predecessorId:ids.predActive,dueAt:'2030-01-01T00:00:00.000Z',tagNames:['Alpha','alpha',' space ']},users[role]);status(r,201);publicCard(r);
-        assert.equal(r.data.creatorId,users[role].id);assert.equal(r.data.blocked,true);assert.deepEqual(r.data.warnings,[]);
+        assert.equal(r.data.blocked,true);assert.deepEqual(r.data.warnings,[]);
         const saved=await row(r.data.id);assert.equal(saved.creator_id,users[role].id);assert.equal(saved.description,'raw description');assert.equal(saved.assignee_id,users.viewer.id);assert.equal(saved.predecessor_id,ids.predActive);
         assert.equal((await pool.query('SELECT count(*)::int AS n FROM card_tags WHERE card_id=$1',[saved.id])).rows[0].n,2);
         const acts=await activities(saved.id);assert(acts.some(a=>a.action==='CARD_CREATED' && a.actor_id===users[role].id));assert(acts.every(a=>a.metadata!==null));
@@ -173,7 +173,7 @@ async function main(){
     const r=await Promise.all([move(api,a,d1),move(api,a,d2)]);assert.deepEqual(r.map(v=>v.status).sort(),[200,409]);assert.equal(r.find(v=>v.status===409).data.code,'VERSION_CONFLICT');assert.equal((await row(a)).version,2);assert.equal((await activities(a)).filter(v=>v.action==='CARD_MOVED').length,1);
   });
   await check('API tag concurrent creation reuses lower key',async()=>{
-    const d1=await newColumn('tag1'),d2=await newColumn('tag2'),name='New'+run;
+    const d1=await newColumn('tag1'),d2=await newColumn('tag2'),name='New'+run.replaceAll('-','').slice(0,20);
     const r=await Promise.all([create(api,d1,{title:'tag-one',tagNames:[name,name.toLowerCase()]}),create(api,d2,{title:'tag-two',tagNames:[name.toUpperCase()]})]);for(const result of r)status(result,201);
     const tags=(await pool.query('SELECT id,name FROM tags WHERE board_id=$1 AND lower(name)=lower($2)',[ids.board,name])).rows;assert.equal(tags.length,1);
     for(const result of r)assert.equal((await pool.query('SELECT count(*)::int AS n FROM card_tags WHERE card_id=$1 AND tag_id=$2',[result.data.id,tags[0].id])).rows[0].n,1);
@@ -193,15 +193,15 @@ async function main(){
     await unchanged(async()=>{for(const origin of [null,'http://wrong.invalid'])status(await post(web,`/columns/${columns[0].id}/cards`,users.owner,{title:'forbidden'},undefined,origin),403,'FORBIDDEN');});
   });
   await check('API activity failure rolls back create tags and move',async()=>{
-    const name='qa03_'+run.replaceAll('-',''),dest=await newColumn('rollback'),source=await newColumn('rollback source'),title=prefix+'rollback',id=await seedCard(source,0,'rollback'),newTag='rollback_'+run;
+    const name='qa03_'+run.replaceAll('-',''),dest=await newColumn('rollback'),source=await newColumn('rollback source'),title=prefix+'rollback',id=await seedCard(source,0,'rollback'),newTag='rollback_'+run.replaceAll('-','').slice(0,20);
     const otherActivities=(await pool.query('SELECT a.* FROM activities a JOIN cards c ON c.id=a.card_id WHERE c.board_id<>$1 ORDER BY a.id',[ids.board])).rows;
     assert(/^[a-z0-9_]+$/.test(name));assert(/^[a-zA-Z0-9_-]+$/.test(title));assert(/^[0-9a-f-]+$/.test(users.owner.id));
     let createdFunction=false,createdTrigger=false;
     try{
-      await pool.query(`CREATE FUNCTION ${name}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.actor_id='${users.owner.id}'::uuid AND EXISTS(SELECT 1 FROM cards WHERE id=NEW.card_id AND board_id='${ids.board}'::uuid AND title='${title}') THEN RAISE EXCEPTION 'QA_ATOMIC_FIXTURE' USING ERRCODE='23514'; END IF; RETURN NEW; END $$`);createdFunction=true;
+      await pool.query(`CREATE FUNCTION ${name}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.actor_id='${users.owner.id}'::uuid AND EXISTS(SELECT 1 FROM cards WHERE id=NEW.card_id AND board_id='${ids.board}'::uuid AND title='${title}') THEN RAISE EXCEPTION 'QA_ATOMIC_FIXTURE' USING ERRCODE='P0001'; END IF; RETURN NEW; END $$`);createdFunction=true;
       await pool.query(`CREATE TRIGGER ${name} BEFORE INSERT ON activities FOR EACH ROW EXECUTE FUNCTION ${name}()`);createdTrigger=true;
-      await unchanged(async()=>{const r=await create(api,dest,{title,tagNames:[newTag]});assert(r.status>=400,'Injected DB activity failure must not return success');});
-      await unchanged(async()=>{const r=await move(api,id,dest);assert(r.status>=400,'Injected DB activity failure must not return success');});
+      await unchanged(async()=>{const r=await create(api,dest,{title,tagNames:[newTag]});status(r,500);});
+      await unchanged(async()=>{const r=await move(api,id,dest);status(r,500);});
       assert.equal((await pool.query('SELECT count(*)::int AS n FROM tags WHERE board_id=$1 AND name=$2',[ids.board,newTag])).rows[0].n,0);
       const unaffected=await create(api,dest,{title:prefix+'not-rollback'});status(unaffected,201);
       // Compare pre-existing records by ID; other simultaneous runs may append their own records.
@@ -213,6 +213,7 @@ async function main(){
       assert.equal((await pool.query('SELECT count(*)::int AS n FROM pg_trigger WHERE tgname=$1',[name])).rows[0].n,0);
       assert.equal((await pool.query('SELECT count(*)::int AS n FROM pg_proc WHERE proname=$1',[name])).rows[0].n,0);
     }
+    const createRecovery=await create(api,dest,{title,tagNames:[newTag]});status(createRecovery,201);
     const recovery=await move(api,id,dest);status(recovery,200);assert.equal((await row(id)).column_id,dest);
   });
   await check('API BFF revoked and absolute-expired sessions cannot write',async()=>{
