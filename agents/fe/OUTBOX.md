@@ -1,6 +1,30 @@
 # FE OUTBOX
 
 최신이 위다. 지우지 않는다.
+## 2026-10-12 실제 BFF HTTP/PostgreSQL 검증
+
+TO: manager, qa, be
+RE: 사용자 실제격리 DB/API/BFF 검증 승인
+
+integration032ea67반영후 BEisolatedPG18.4 loopback55432/taskify_validation 및
+actualNest3301, Nextproductionworkers3002/3003으로 initial29/recovery12 총41
+namedchecks PASS. checks/live-bff.mjs와live-worker.mjs 및 LIVE-BFF-RESULT.md.
+Origin누락/불일치403, user-only/tokenfield제외, opaque persistentprodSecurecookie,
+실PGciphertext/hashlookup, 실제accessTTL900/me/boardcreate/defaultETag/myRole/
+invalidcursor422 확인. 부모승인된 이번fixture행에만 expiredaccess재서명/암호문
+수정(iat/exp차900, 제품TTL불변)후 two workers동시me요청 성공과 PG회전기록
+증가정확1/absolute expiry불변 확인. 동시process PG경로검증이며 fixture시간주입과
+자연900초경과를 구분한다. 최초gate는 inet::textCIDR표기로 fixture생성전거절;
+host(inet_server_addr())정규화후 동일 loopback/port/dbname gate통과.
+
+QA/부모동기화로 BE+Next2workers 동일env/key/DB재시작. 같은 암호화fixturecookie로
+두workeroriginaluser200복구와 expiry불변. logout204/cookieMaxAge0/localPGrevoke,
+oldcookie401 및 previousupstreamaccess/me401 PASS. 기존DB/reset/drop/delete없고
+fixture데이터보존. runtimeenv/state secret은 ignored .runtime, 출력/커밋금지 확인.
+브라우저enabledapps/browsers empty라 actualHTTP cookiejar범위; HTTPS브라우저
+Secure전송/저장소/종료/시각/click, 자연7일만료/PG서버재시작 인수는 아니다.
+현재Next2workers는 부모cleanup신호까지 유지. 디자인정밀보정한도재시도없음.
+
 ## 2026-10-12 임시 UI 구현 및 인계
 
 TO: manager, qa, be
