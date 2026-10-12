@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@theme {
+  --color-brand: #5534da;
+  --color-brand-light: #f1edff;
+  --color-ink: #242333;
+  --color-muted: #6e6d7a;
+  --color-line: #e9e8ef;
+  --color-canvas: #faf9fc;
+}
+body { font-family: Arial, "Noto Sans KR", sans-serif; color: var(--color-ink); background: var(--color-canvas); }
+button, a, input, textarea { outline-offset: 4px; }
+button:not(:disabled), a { cursor: pointer; }
+button:disabled { cursor: wait; }

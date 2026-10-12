@@ -30,7 +30,9 @@
     "app/**/*.ts",
     "checks/**/*.ts",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    "app/**/*.tsx",
+    "src/**/*.tsx"
   ],
   "exclude": [
     "node_modules"

@@ -6,21 +6,24 @@
     "start": "next start -p 3002",
     "build": "next build --webpack",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-transform-types --test checks/bff.test.mjs"
+    "test": "node --experimental-transform-types --test checks/bff.test.mjs checks/browser-api.test.mjs"
   },
   "dependencies": {
     "next": "16.4.0",
+    "pg": "8.23.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "pg": "8.23.1",
     "server-only": "0.0.1"
   },
   "devDependencies": {
-    "typescript": "5.9.3",
+    "@tailwindcss/postcss": "4.3.3",
     "@types/node": "24.10.1",
     "@types/pg": "8.15.6",
     "@types/react": "19.2.2",
-    "@types/react-dom": "19.2.2"
+    "@types/react-dom": "19.2.2",
+    "postcss": "8.5.29",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3"
   },
   "type": "module"
 }

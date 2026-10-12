@@ -61,7 +61,7 @@ QA 001~013 통과 또는 제품 기능 완료를 주장하지 않는다.
 
 ## Next BFF foundation (2026-10-12)
 
-No page UI is supplied. Browser routes: POST /api/auth/register, /api/auth/login,
+The foundation browser routes are: POST /api/auth/register, /api/auth/login,
 /api/auth/logout; GET/PATCH /api/me; GET/POST /api/boards. Auth success keeps
 upstream 200/201 and returns only {user}. Other JSON statuses and ETag are
 preserved; token fields and echoes of known session tokens are redacted. No
@@ -83,7 +83,7 @@ fails closed before an upstream/DB request. Keep the same key across workers
 and restarts; key replacement invalidates existing encrypted bundles.
 Production must use HTTPS for web and upstream traffic. Dev/start use port
 3002 to avoid Nest's 3000. Run npm ci, npm run typecheck, npm test and npm run
-build; npm run dev or npm start only during a separately approved live phase.
+build; npm run dev or npm start can run a DB-free UI preview. Live DB/API integration remains a separate phase.
 
 Production always uses pg/PostgreSQL, never an in-memory fallback. BE owns the
 migration creating web_sessions(id UUID, session_hash unique, encrypted_tokens
@@ -109,7 +109,7 @@ require login again. No raw errors/tokens are logged. Fetch timeout is 10s and
 redirects are rejected. An upstream success followed by session insert failure
 can leave an upstream session without a browser cookie.
 
-Business HTTP endpoints in Nest remain absent. These routes are foundation
+Nest auth/me/boards HTTP endpoints are now implemented in the BE HTTP batch; live integration/DB acceptance has not run. These BFF routes are foundation
 source only; mock tests/build do not establish actual DB durability, network
 integration, browser restart recovery, or QA AUTH-BFF-001..009 acceptance.
 
@@ -118,3 +118,42 @@ rotation before the BFF save/commit fails. Its rotation cannot be rolled back
 by the web_sessions transaction. The failure requires re-login; retrying an
 old refresh can trigger Nest's session reuse revocation. Mock serialization
 is evidence for local lock discipline only, not real multi-worker PG atomicity.
+
+## Temporary UI batch (2026-10-12)
+
+User explicitly approved "temporary UI implementation followed by design
+correction" after the Figma Starter MCP call limit blocked high-fidelity
+get_design_context and screenshots. Figma root metadata was read: file
+uUzjrPIuWIrQG8a93G0rTq, login frame6:2 and boards frame6:24. Layout uses the
+observed marketing/form and sidebar/topbar/board-tile structure. This is not
+an exact Figma reproduction. Detailed colors/fonts/assets/registration and
+creation states require follow-up design correction when context is available.
+No screenshot was substituted as an asset and no Figma temporary asset URLs
+are included. Brand #5534DA follows the existing policy.
+
+Routes /login, /register, /boards (root redirects to /boards). All data travels
+through /api BFF with same-origin cookies; browser never stores auth tokens.
+Email/password strings are sent unchanged; email uses text+inputMode=email to
+avoid browser email-field whitespace sanitation. Register constraints come
+from OpenAPI. Login does not inherit register's password minimum. Lists use
+server order/myRole/nextCursor without card/member counts unsupported by the
+contract. Creation omits color if no selection, preserving server default.
+Pagination keeps opaque cursor bookmarks, flags422 instead of empty success,
+and returns to first page after creation. Board detail and other workspace
+features have no active fake links. Logout502 with confirmed local termination
+shows the upstream-unconfirmed notice; other failures retain an explicit error.
+Forms have labels, loading/error states, repeated-submit guards and abort cleanup;
+responsive layouts keep mobile controls visible. UI artwork/assets are pending.
+
+Tailwind4.3.3 + PostCSS8.5.29 follow the official Next installation guide:
+https://tailwindcss.com/docs/installation/framework-guides/nextjs . The first
+PostCSS version selected was flagged by npm; it was patched to8.5.29 and the
+subsequent install reported zero vulnerabilities. Generated apps/web/AGENTS.md
+was created by Next dev; bundled Next docs for server/client components and
+useSearchParams were read, and client pages have Suspense boundaries.
+
+Validation: typecheck PASS, BFF/mock browser client12/12 PASS, Next build PASS.
+Next dev starts without DB credentials; HTML route smoke is separately recorded
+in FE OUTBOX. Available computer-use browser inventory is empty, so rendered
+visual/interactive browser checks could not run. No DB connection or real
+Nest auth/boards acceptance performed; a preview is not live integration.
