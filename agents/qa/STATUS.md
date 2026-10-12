@@ -1,7 +1,8 @@
 # QA 상태
 
-2026-10-12: AUTH-BFF 인수 규격 9개 선행 작성 완료; 구현 커밋 독립 검토 대기.
-기준: codex/orchestration 1ee9b12의 BOARD와 docs/contract/v0.2.1.md.
-기존 QA001~013 및 새 AUTH-BFF001~009 모두 미실행. DB 설치/실행/접속 없음.
-제품 코드/계약/CHARTER 및 기존13개 수정 없음.
-이전 BE1/FE1 정적 결과와 한계는 OUTBOX 및 review/BE1-REVIEW.md에 보존.
+2026-10-12 AUTH/BFF 독립 검토 완료.
+BE0f981eccc57bf867b4e0407136ae19418ad09397 / FE4f0fa1d90aebeb9f4430c3eacda5da90917948f4.
+판정: 기반 코드 정적/mock 범위 통과; 실제 기능 인수 보류. 차단 결함 미발견.
+QA 독립 FE BFF mock8/8 PASS. BE26 mock/build/Prisma는 역할 보고만.
+기존13개 및 AUTH-BFF9개 실제 인수 전부 미실행; DB 설치/실행/접속 없음.
+상세 review/AUTH-BFF-REVIEW.md. 제품/계약 수정 없음.
