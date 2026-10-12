@@ -120,3 +120,26 @@ HTTP tests use a Nest server plus explicit in-memory Prisma mocks, not PostgreSQ
 Failure injection checks transaction scope and error propagation; it cannot prove
 actual database rollback, unique constraints, keyset query execution or concurrent
 session behavior. Live DB/BFF/browser acceptance remains separate and unexecuted.
+
+## Isolated live DB verification (2026-10-12)
+
+The approved isolated PostgreSQL18.4 batch applied both existing migrations and
+verified internal transactions: TypeScript build,7 suites/40 tests,11 real DB checks
+passed. See agents/be/LIVE-DB-REPORT.md for the deferred COMMIT defect, narrow
+LAST_OWNER repair and persisted rollback evidence. Earlier DB-free limits are updated
+only for these checks; all business HTTP/browser acceptance is not implied.
+
+Set TASKIFY_API_DEPENDENCIES to the existing node_modules directory. The lifecycle
+script never resets/drops/removes DB data and retains unique fixtures. Only a new
+UUID directory may use `node scripts/isolated-db.cjs init`, followed by `prepare`
+and `deploy`. Retained data uses `status`/`connect`, then `start` if unavailable;
+never repeat init. `prepare` preserves existing secrets and writes ignored env JSON
+with origin3002/API3301/database gate and BFF3002/3003 settings. Output is path and
+nonsecret metadata only. Native binaries are reused read-only without installation.
+
+.runtime/active-db.json selects the managed config. Control output is in
+.runtime/*-control.log; PG data/logs/secret environment are in the UUID directory.
+`node scripts/isolated-api.cjs` runs the built API from that environment.
+`node scripts/live-db-regression.cjs` requires the exact isolated cluster and retains
+all fixture data. Final `stop` requires parent coordination and uses pg_ctl fast
+shutdown, preserving data. Runtime secrets/files must never be printed or committed.

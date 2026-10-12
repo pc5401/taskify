@@ -15,7 +15,22 @@ export class TransactionsService {
 
   async run<T>(work: (tx: Tx) => Promise<T>): Promise<T> {
     try {
-      return await this.prisma.$transaction(work, {
+      return await this.prisma.$transaction(async tx => {
+        const result = await work(tx);
+        // Prisma 5.22 may resolve despite a deferred trigger rejecting COMMIT.
+        // Validate this named constraint after all writes, while errors still reach JS.
+        try {
+          await tx.$executeRaw`SET CONSTRAINTS boards_require_owner IMMEDIATE`;
+        } catch (error) {
+          if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2010' &&
+              error.meta?.code === '23514' &&
+              (error.meta?.message === 'LAST_OWNER' || error.meta?.message === 'ERROR: LAST_OWNER')) {
+            fail(409, 'LAST_OWNER');
+          }
+          throw error;
+        }
+        return result;
+      }, {
         isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
       });
     } catch (error) {

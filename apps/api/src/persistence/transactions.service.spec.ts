@@ -8,6 +8,7 @@ describe('transaction foundations (mock DB; not a concurrency proof)', () => {
   beforeEach(() => {
     tx = {
       $queryRaw: jest.fn().mockResolvedValue([{ id: 'board' }]),
+      $executeRaw: jest.fn().mockResolvedValue(0),
       boardMember: {
         findUnique: jest.fn().mockResolvedValue({ role: Role.OWNER }),
         count: jest.fn().mockResolvedValue(1),
@@ -94,5 +95,24 @@ describe('transaction foundations (mock DB; not a concurrency proof)', () => {
       code: 'P2003', clientVersion: '5.22.0', meta: { field_name: 'comments_author_id_fkey' },
     });
     await expect(service.run(async () => { throw unrelated; })).rejects.toBe(unrelated);
+  });
+  it('validates the named deferred owner constraint after all transaction work', async () => {
+    const work = jest.fn().mockResolvedValue('result');
+    expect(await service.run(work)).toBe('result');
+    expect(tx.$executeRaw.mock.calls[0][0].join('')).toBe('SET CONSTRAINTS boards_require_owner IMMEDIATE');
+    expect(work.mock.invocationCallOrder[0]).toBeLessThan(tx.$executeRaw.mock.invocationCallOrder[0]);
+  });
+  it('maps only the owner constraint validation SQLSTATE/message pair', async () => {
+    const error = new Prisma.PrismaClientKnownRequestError('Query failed', {
+      code: 'P2010', clientVersion: '5.22.0', meta: { code: '23514', message: 'ERROR: LAST_OWNER' },
+    });
+    tx.$executeRaw.mockRejectedValueOnce(error);
+    await expect(service.run(async () => 'result')).rejects.toMatchObject({ status: 409, response: { code: 'LAST_OWNER', details: {} } });
+    const unrelated = new Prisma.PrismaClientKnownRequestError('LAST_OWNER somewhere', {
+      code: 'P2010', clientVersion: '5.22.0', meta: { code: '23514', message: 'different check' },
+    });
+    tx.$executeRaw.mockRejectedValueOnce(unrelated);
+    await expect(service.run(async () => 'result')).rejects.toBe(unrelated);
+    await expect(service.run(async () => { throw error; })).rejects.toBe(error);
   });
 });

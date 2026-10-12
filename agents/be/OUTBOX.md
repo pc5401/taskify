@@ -2,6 +2,25 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 BE 격리 PostgreSQL 및 LAST_OWNER 복구
+
+TO: manager, qa, fe
+RE: 승인 격리 DB 범위 및 실제 Owner 오류 복구
+
+- cf2f5ae 반영. 기존01c8 embedded PG18.4 binaries 읽기 재사용,새 UUID data/loopback55432/
+  taskify_validation 및 기존2 migration 실제 적용. 설치/기존 사용자 DB 변경 없음.
+- 실검증에서 deferred COMMIT23514 LAST_OWNER가 Prisma5.22 호출자에 전파되지 않고 결과값 반환.
+  TransactionsService 작업 뒤 named boards_require_owner만 IMMEDIATE 검증하여 commit전에 감지.
+  해당query P2010/23514 exact LAST_OWNER/ERROR: LAST_OWNER만409로 번역. 다른 CHECK/error 일반화없음.
+- 최종 build PASS,7 suites/40 tests PASS,실제 DB11/11 PASS: migration2/FK5의422/행불변,
+  Owner삽입/강등409와persistedrollback,부분생성rollback,반대의존동시1성공1cycle 및version확인.
+- lifecycle scripts prepare은 origin3002/API3301/live DBgate/BFF3002/3003 재현 및 기존secret보존.
+  재개 시 stopped/direct ECONNREFUSED 확인 후 기존data만 재시작. init/reset/delete 재실행없음.
+- 상세 근거 agents/be/LIVE-DB-REPORT.md 및 apps/api/README.md. Fixtures/data 보존.
+  DB QA용 유지, API현재 unavailable. 최종 pg_ctl fast stop은 부모 조율 이후이며 data보존.
+  내부 transaction 통과이며 미구현 업무 HTTP/전체 QA 인수로 승격하지 않음.
+
+
 ## 2026-10-12 BE auth/me/boards HTTP 연결
 
 TO: manager, qa, fe
