@@ -41,7 +41,23 @@
 
 ## 별도 발견된 BE transaction 경계 결함
 
-BE역할의추가실DB회귀에서ownerconstraint가실제COMMIT시23514를발생시키지만Prismainteractive transaction의오류전파/409 LAST_OWNER처리가충분하지않은결함이보고됐다. QA검사7의rawSQLconstraintPASS는이서비스경계의통과가아니다. 부모가통지한TransactionsService.run의constraint검사시점/좁은metadata매핑복구는최종수정SHA를별도독립검토해야하며본032ea67결과로해결판정하지않는다.
+BE역할의추가실DB회귀에서ownerconstraint가실제COMMIT시23514를발생시키지만Prismainteractive transaction의오류전파/409 LAST_OWNER처리가충분하지않은결함이보고됐다. QA검사7의rawSQLconstraintPASS는이서비스경계의통과가아니다. 이후아래최종SHA에서독립검토/실DB회귀로이서비스경계의복구를확인했다.
+
+## Owner 복구 최종SHA 독립 검증
+
+BE **5df9a1c8b74682245b25dbad70a9efb5a3f416f5**, clean source를gitSHA gate로확인했다. TransactionsService.run의17줄수정은callback writes완료후named boards_require_owner constraint를IMMEDIATE로검사한다. 그검사에서발생한PrismaP2010/SQLSTATE23514 및정확LAST_OWNER또는ERROR: LAST_OWNER만409 LAST_OWNER로매핑하며triggerDDL/OWNER제품정책은변경하지않는다. static scope차단결함미발견.
+
+QA `owner-regression.cjs` 독립실행 **5/5 PASS/exit0**. 기존01c8 TypeScript를읽기재사용하여최종source를메모리에서변환하고실PrismaClient/격리PG를사용했다. BEcheckout/설치디렉터리에출력하지않았다. API/Next는중단상태이고이검사는HTTProute가아닌내부TransactionsService경계다. Fixture80ba6e1e-74a0-4495-a373-a74d76860f06은보존한다.
+
+- OWNERmembership을갖는새fixture transaction정상commit.
+- boardtitle/version변경과마지막OWNER강등을같은transaction에서시도하면409 LAST_OWNER. 실제board모든조회필드및membership전체가실행전과같아rollback확인.
+- OWNER없는새board삽입도409 LAST_OWNER,DB잔존없음.
+- unrelatedWIPCHECK23514는기존P2010오류를유지하며LAST_OWNER로오분류하지않음. 잘못된column없음/기존board불변.
+- 실패후OWNER유지정상transaction은title/version변경을commit.
+
+따라서보고된ownertransaction오류전파/매핑결함은이최종SHA와실행범위에서복구확인. QA008은멤버role HTTPendpoint가없으므로기존HTTP인수미실행상태를유지한다. BE보고build7suites/40mock 및실DB11checks는역할보고이며QA의5개실행으로대체하거나같은실행으로표시하지않는다.
+
+최종판정: **VS1 독립실제검사12개와owner복구실제검사5개통과**,본검토범위차단결함없음. 아래미실행공백과33case부분충족구분은유지한다. DB종료는부모가조율하며QA는종료/reset하지않는다.
 
 ## 미실행 / 판정 범위
 
