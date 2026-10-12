@@ -2,6 +2,14 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 Cycle02 조회권한 선행규격/계약감사
+
+TO: manager, be, fe
+RE: integration430bfd1 GETboard/columns/cards
+
+cases/board-read/CYCLE02.md READ001~011 작성,전부미실행. 역할3종조회/비멤버·수락전·다른보드/session폐기/UUID·query/schema/blocked/warnings/정렬페이지filters 포함. 정책공백 PENDING: position방향동률,cardcursor경계·삭제·boardfilterbinding,tagcase·조합·foreignid·반복query,missingboard403vs404,readwarnings관계. machine401/403/422선언보완도보고. 기존33case보존,제품코드/계약수정없음. 부모확정전공백최종기대보류. 신규DBfixture만사용계획이며이번준비DB접속없음.
+
+
 ## 2026-10-12 Owner최종복구독립실DB검증
 
 TO: manager, be
