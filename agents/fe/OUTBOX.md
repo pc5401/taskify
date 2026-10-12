@@ -1,6 +1,35 @@
 # FE OUTBOX
 
 최신이 위다. 지우지 않는다.
+## 2026-10-12 임시 UI 구현 및 인계
+
+TO: manager, qa, be
+RE: Figma 참조 및 사용자 임시 UI 승인
+
+QA auth-boards-http ACCEPTANCE와 최신 integration915f545를 코드 전 병합/읽었다.
+Figma mandatory skill 적용 후 root metadata로 login6:2, boards6:24를 확인했으나
+고충실도 context/screenshot은 Starter MCP 한도로 차단. 사용자가 '임시 UI 구현
+후 디자인 보정'을 명시 승인하여 metadata/계약 기반 Next/Tailwind UI를 작성했다.
+정확한 Figma 재현/시각 통과를 주장하지 않는다. 디자인 보정 후속은 README.
+
+/login,/register,/boards 및 루트 redirect. 브라우저 client는 BFF 상대 경로와
+same-origin 쿠키만 사용, token 저장/Authorization 없음. 원문 email/password
+변환 없음. email type=text/inputMode=email은 브라우저 공백 보정을 피한다.
+myRole/server order/opaque cursor/nextCursor=null 유지,422 책갈피 오류 구별.
+생성 기본 color 생략, 성공 후 첫 페이지 복귀. 로그인/복구401/빈목록/로딩/
+오류/취소 및 반복 제출 방지. logout204와502 local-completed/upstream-unconfirmed
+상태 구별. 미구현 상세/초대/검색/마이페이지에 가짜 활성 링크 없음.
+
+typecheck PASS, BFF8+browserclient4=12 mock PASS, Next production build PASS.
+Next dev DB-free 시작 및 localhost HTML/login,/register,/boards 모두200과
+해당 폼/제목 확인 후 종료. 브라우저 inventory=[]여서 시각/클릭 미검증.
+실제 DB 설치/기동/접속, Nest auth/boards 통합 인수 미실행. 임시 UI는 실서버
+인수 성공이 아니다. Tailwind4.3.3; PostCSS8.5.6 install finding을8.5.29로
+패치하고 npm 보고0 vulnerabilities. Next dev 자동생성 AGENTS.md를 포함하고
+설치 Next docs client-components/useSearchParams 확인, Suspense 적용.
+README의 BE endpoint부재/불필요 별도dev승인 문구를 현재 HTTP구현/DB미검증으로 정정.
+QA 독립 검토 요청. 근거 src/browser-api.ts, src/ui, app 및 README.
+
 ## 2026-10-12 다음 화면 배치 준비 조사
 
 TO: manager, qa

@@ -61,3 +61,12 @@ QA 요청: 로그인/가입 원문 이메일, 인증 복구/401, 보드 empty/er
 문장과 UI mock 검증 범위를 제공해 주세요. mock fetch로 요청/응답 상태를 검증하고
 기존 BFF8/8 및 transport5/5를 유지한다. TypeScript/Next build는 로컬 검증이며
 실제 DB/HTTP/브라우저 인수로 표시하지 않는다. 화면 시각 검증은 Figma 수신 뒤다.
+
+## 후속 반영
+
+Figma 링크 수신 후 mandatory figma-design-to-code skill 적용. metadata에서
+login6:2 / boards6:24를 확인했으나 고충실도 context 두 호출은 Starter 한도로
+실패했고 screenshot 없음. 사용자가 '임시 UI 구현 후 디자인 보정'을 명시적으로
+승인하여 metadata/계약 기반 임시 UI를 구현했다. 정밀 디자인 재현 주장은 없다.
+QA ACCEPTANCE 및 integration915f545를 제품 코드 전 반영했다. cursor 경계 정책은
+최신 승인대로 opaque boundary이며 stale anchor 동작은 서버 책임이다.
