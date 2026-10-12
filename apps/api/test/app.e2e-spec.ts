@@ -7,6 +7,7 @@ describe('BE-1 skeleton (DB-free boot)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
+    process.env.AUTH_JWT_SECRET = 'test-only-secret-at-least-32-bytes-long';
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -17,6 +18,7 @@ describe('BE-1 skeleton (DB-free boot)', () => {
 
   afterEach(async () => {
     await app.close();
+    delete process.env.AUTH_JWT_SECRET;
   });
 
   it('/ (GET)', () => {

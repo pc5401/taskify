@@ -2,6 +2,35 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 BE auth/me/boards HTTP 연결
+
+TO: manager, qa, fe
+RE: BOARD HTTP 배치, QA auth-boards-http HTTP001~011, 통합915f545 계약보완
+
+- 선행 QA a65ad25 읽은 후915f545를 fast-forward하여 구현. register201/login200/refresh200/logout204,
+  GETme200, GETboards200/POSTboards201 연결. prefix /v1, 보호 me/boards/logout 모두 SessionGuard.
+- 공개 auth는 accessToken/refreshToken/user만. refresh 필수 user 포함. User/Board explicit serializer로
+  passwordHash, session/history/hash 제외. AppModule auth 모듈 연결; AUTH_JWT_SECRET 최소32bytes 필수.
+- class-validator 기존 DTO 제약 및 global422 INVALID_INPUT code/message/details. unknown key 별도거부없음.
+  이메일 trim/lowercase 없이 저장/조회; 형식검증 유지. nickname/password 추가 제품 제한 없음.
+  register user+initialsession 단일 transaction; P2002 user email409 EMAIL_TAKEN.
+- PasswordService async Node scrypt-v1, random16byte salt,64byte key,N16384/r8/p1,maxmem64MiB,
+  timingSafeEqual. bcrypt72byte truncation 피하고 전체password 처리. unknown account dummy KDF 동일parameter,
+  wrongpassword/unknown은401 INVALID_CREDENTIALS. 운영 rate limit/KDFcapacity는 후속사항이며 정책 미추가.
+- 내 보드는 user membership만 joined_at DESC/board_id DESC, myRole 계산, default20/max100,limit+1.
+  cursor는 canonical base64url JSON joinedAt/boardId 값 검증. 저장값 OR 경계 조회라 anchor삭제 뒤에도 계속.
+  새 참여는 firstpage refresh, snapshot보장 없음. 잘못된 cursor/limit422 INVALID_INPUT.
+- 생성 board/OWNER/default3columns 단일 transaction. 할 일/하는 중/완료,0/1024/2048,세 번째만done.
+  color 생략#5534DA/명시string그대로. 응답 Board+versionETag,생성에If-Match없음.
+- TypeScript build 및7 suites/38 tests PASS. 새12 tests: Nest HTTP7, password1, authorchestration2,
+  boardsfailure/cursor2. 회전/폐기/다른세션/DTO/이메일/serializer/keyset/기본컬럼/ETag 검사.
+  실패주입은 transaction 전달/순서/전파만 검사, 실제rollback 증거 아님. 기존read-only deps재사용,설치없음.
+- initial 검증 실행 중 columnposition수정으로 구버전test기대값1건실패; 수정된최종검증은38전부PASS.
+  DB 설치/실행/연결 없음. 실제SQL/HTTP-BFF/browser/경쟁/rollback/재시작 인수 미실행.
+  QA실제기능통과 아님. schema/migration 변경 없음. 상세 apps/api/README.md, env example키설명.
+- 범위제외: PATCHme/password,보드상세/수정/삭제 및 나머지CRUD. DB준비 및 live검증은 별도허용 이후.
+
+
 ## 2026-10-12 BE-2 인증 세션 및 BFF 저장 기반
 
 TO: manager, qa, fe
