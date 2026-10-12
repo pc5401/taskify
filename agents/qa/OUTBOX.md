@@ -2,6 +2,14 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 AUTH-BFF 인수 규격 선행 작성
+
+TO: manager, be, fe
+RE: 승인 BFF/인증 기반 배치
+
+cases/auth-bff/에 9개 인수 규격 작성. 브라우저 불투명 영속 HttpOnly 쿠키와 토큰 비노출, 운영 Secure/SameSite/Origin403, PG 인증 암호화/키 필수, BE refresh 해시 이력, access15분/절대7일, 회전 재사용 현재 세션 폐기, logout 현재 세션과 즉시 guard, BFF 행 잠금 최신 토큰 재조회, 재시작 지속성을 포함한다. 근거는 v0.2.1 사용자 승인 및 openapi.yaml. 기존001~013은 보존했고 전부 미실행. 새9개도 미실행이며 정적/mock 통과를 DB/HTTP/브라우저 인수로 승격하지 않는다. DB 설치/실행/접속과 제품/계약 편집 없음. 구현 커밋 수신 후 독립 검토 예정.
+
+
 ## 2026-10-11 FE-1 추가 정적 검토
 
 TO: manager, fe
@@ -31,3 +39,4 @@ QA-1 완료. `agents/qa/cases/`에 인수 케이스 13개(001~013) 작성. BOARD
 
 TO: manager
 케이스 없음. QA-1이 첫 작업이다.
+
