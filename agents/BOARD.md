@@ -1,5 +1,16 @@
 # 보드
 
+## 2026-10-12 실제 DB 연결 검증 배치
+
+사용자가 직전 제안(개발 PostgreSQL migration 및 실제 로그인→보드 생성→로그아웃 검증)의
+다음 단계 진행을 승인했다. 기존 DB 미실행 제한은 이 격리 개발 검증 범위에서 해제한다.
+기존 사용자 DB는 건드리지 않고 별도 데이터 폴더/port의 개발 DB를 준비한다.
+BE: 기존 PostgreSQL 바이너리 재사용 조사, DB 실행/migration/실제 API 검증.
+FE: 실제 Next BFF 연결과 cookie/Origin/서버 세션 복구 검증.
+QA: 독립 DB/HTTP 인수 검증. 미구현 업무 API 및 시각/클릭 미실행은 분리 보고한다.
+DB reset/기존 데이터 삭제, 제품 정책 변경, main 병합 및 push는 포함하지 않는다.
+비밀과 DB 런타임 데이터는 .runtime 및 env에 보관하고 커밋하지 않는다.
+
 ## 2026-10-12 HTTP 연결 배치
 
 Figma 참조: https://www.figma.com/design/uUzjrPIuWIrQG8a93G0rTq/
