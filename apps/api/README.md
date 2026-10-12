@@ -55,3 +55,36 @@ DB 설치·시작용 스크립트는 인계하지 않았다.
 404와 정상 종료를 검사한다. migration 적용, 실제 FK/트리거 동작, cascade 삭제,
 동시 A→B/B→A, Owner 경쟁, WIP 경쟁, 알림 멱등은 DB에서 검증하지 않았다.
 QA 001~013은 아직 HTTP/DB 인수 테스트 통과가 아니다.
+# Auth session foundation (2026-10-12)
+
+`AuthSessionModule` exports `AuthSessionService` and `SessionGuard`; it is not yet
+imported by AppModule and registers no HTTP routes. A future login flow must verify
+credentials before `issueForAuthenticatedUser(userId)`. Public AuthResponse stays
+`{accessToken, refreshToken, user}`; the service's extra lifetime fields are internal.
+Import the module and attach SessionGuard to each future protected route. Set
+AUTH_JWT_SECRET to a random secret of at least 32 bytes; module initialization fails
+without it. JWT signing/verification uses the existing jsonwebtoken 9.0.3 library
+with HS256 pinned. Existing @nestjs/jwt 12 is ESM and incompatible with this Nest 10
+CommonJS runtime; no custom JWT cryptography or dependency installation was used.
+
+Session access TTL is 900 seconds, refresh expiry is the initial session creation
+time plus seven days. Hash-only refresh history persists consumed tokens for reuse
+detection. Refresh and logout acquire the auth_sessions row lock. Reuse revocation
+commits before returning 401; throwing inside that transaction would undo it.
+The guard queries session validity on every request. Credential-history cleanup
+is intentionally deferred; never remove consumed history while its session is live.
+
+The additive migration includes auth_sessions, refresh_credentials and FE-owned
+token ciphertext storage web_sessions. FE SQL uses exact snake_case columns
+id/session_hash/encrypted_tokens/expires_at/revoked_at/created_at. FE supplies UUIDs
+for raw SQL inserts. BE does not store raw refresh tokens or perform BFF encryption.
+
+For DB-free checks with existing dependencies, set TASKIFY_API_DEPENDENCIES to an
+existing apps/api/node_modules path, then run `node scripts/prisma-local.cjs validate`,
+`node scripts/prisma-local.cjs generate`, and `node scripts/check-existing-deps.cjs`.
+Generation uses the existing generator without auto-install, with branch-local
+generated output and temporary ignored .runtime files. The latter command runs a
+TypeScript build and unit tests with diagnostics enabled. DATABASE_URL is required
+for schema validation but these commands do not connect. No DB migration was applied.
+Actual row-lock concurrency, migration execution, restart persistence, HTTP and
+browser acceptance remain unverified. Login/register HTTP and user/email policy are deferred.
