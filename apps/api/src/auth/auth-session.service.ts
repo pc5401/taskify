@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AccessTokenService } from './access-token.service';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { PrismaService } from '../persistence/prisma.service';
+import { Prisma } from '../../generated/client';
 
 export const ACCESS_SECONDS = 900;
 export const SESSION_MILLISECONDS = 7 * 24 * 60 * 60 * 1000;
@@ -30,16 +31,18 @@ export class AuthSessionService {
   }
 
   // Called only after a future login flow has verified the user's credentials.
-  async issueForAuthenticatedUser(userId: string): Promise<SessionTokens> {
+  async issueForAuthenticatedUser(userId: string, transaction?: Prisma.TransactionClient): Promise<SessionTokens> {
     const now = new Date();
     const expiresAt = new Date(now.getTime() + SESSION_MILLISECONDS);
     const sessionId = randomUUID();
     const refreshToken = randomBytes(32).toString('base64url');
     const tokens = this.bundle(userId, sessionId, expiresAt, refreshToken, now);
-    await this.prisma.$transaction(async tx => {
+    const persist = async (tx: Prisma.TransactionClient) => {
       await tx.authSession.create({ data: { id: sessionId, userId, createdAt: now, expiresAt } });
       await tx.refreshCredential.create({ data: { sessionId, tokenHash: refreshHash(refreshToken), createdAt: now } });
-    });
+    };
+    if (transaction) await persist(transaction);
+    else await this.prisma.$transaction(persist);
     return tokens;
   }
 

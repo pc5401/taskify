@@ -2,17 +2,16 @@
 
 BE-1: NestJS 10 + Prisma 5.22 + PostgreSQL 기반. 계약 v0.2.1.
 
-현재는 HTTP 업무 엔드포인트가 없는 골격이다. FE가 실서버에 연결할 단계는 아니다.
+인증·현재 사용자·내 보드 목록/생성 HTTP가 연결되어 있다. 실제 DB/BFF 연결 검증은 아직 하지 않았다.
 Prisma는 실제 쿼리 전까지 DB에 연결하지 않는다.
 
 ## 실행 (PowerShell)
 
 ```powershell
-Set-Location 'C:\Users\USER\.codex\worktrees\01c8\taskify-board\apps\api'
-# 이 작업 폴더에는 원래 설치된 node_modules를 복사해 두었다.
-# 새 checkout에서 node_modules가 없을 때만 npm.cmd ci를 수행한다.
+# 현재 checkout의 apps/api에서 실행. 이번 작업은 기존 의존성을 읽기 재사용하며 재설치하지 않았다.
 Copy-Item .env.example .env  # 최초 1회, 기존 .env는 덮어쓰지 않는다.
 $env:DATABASE_URL = 'postgresql://taskify:taskify@localhost:5432/taskify?schema=public'
+$env:AUTH_JWT_SECRET = '<at-least-32-byte-random-secret>'
 npm.cmd run prisma:validate
 npm.cmd run prisma:generate
 npm.cmd run build
@@ -21,7 +20,7 @@ npm.cmd run test:e2e -- --runInBand --watch=false
 npm.cmd run start:dev
 ```
 
-PORT 기본 3000, 향후 API prefix는 /v1. 현재 모든 요청은 404다.
+PORT 기본 3000, API prefix는 /v1. 등록 경로는 아래 HTTP 배치 절을 참고한다.
 Nest 자체는 .env를 자동 로드하지 않으므로 PORT도 필요하면 PowerShell 환경 변수로 지정한다.
 Prisma CLI는 .env를 로드한다. 생성 클라이언트는 generated/client (Git 제외).
 Windows에서 경로 접근 EPERM이 발생하면 Codex의 승인된 실행을 이용한다.
@@ -44,7 +43,7 @@ DB 설치·시작용 스크립트는 인계하지 않았다.
 - 내부 서비스: 의존 변경과 역할 변경은 실제 transaction + board FOR UPDATE,
   권한 검사, If-Match, version 조건부 갱신을 사용한다. 의존 변경은 활동 로그도 남긴다.
 - WIP용 목적지 column FOR UPDATE 헬퍼가 있다. WIP 이동 기능 자체는 아직 없다.
-- 미완료: 인증·HTTP 컨트롤러·DTO·전체 CRUD·기본 컬럼 생성·WIP 계산/이동·완료 컬럼 보호·
+- 미완료: 보드 상세/수정/삭제와 나머지 업무 CRUD·WIP 계산/이동·완료 컬럼 보호·
   초대 수락·태그 API·검색·마감 알림 job·전체 응답 직렬화/ETag 연결.
 - FK 및 Owner 트리거 오류 번역은 드라이버 metadata를 이용한다. 실제 PostgreSQL 오류 형태는
   통합 테스트로 확인해야 한다.
@@ -57,11 +56,11 @@ DB 설치·시작용 스크립트는 인계하지 않았다.
 QA 001~013은 아직 HTTP/DB 인수 테스트 통과가 아니다.
 # Auth session foundation (2026-10-12)
 
-`AuthSessionModule` exports `AuthSessionService` and `SessionGuard`; it is not yet
-imported by AppModule and registers no HTTP routes. A future login flow must verify
-credentials before `issueForAuthenticatedUser(userId)`. Public AuthResponse stays
+`AuthSessionModule` exports `AuthSessionService` and `SessionGuard` and is now
+imported by AppModule. Login verifies credentials before issuing a session; register
+creates the user and initial session in one transaction. Public AuthResponse stays
 `{accessToken, refreshToken, user}`; the service's extra lifetime fields are internal.
-Import the module and attach SessionGuard to each future protected route. Set
+SessionGuard protects GET /me, GET/POST /boards, and logout. Set
 AUTH_JWT_SECRET to a random secret of at least 32 bytes; module initialization fails
 without it. JWT signing/verification uses the existing jsonwebtoken 9.0.3 library
 with HS256 pinned. Existing @nestjs/jwt 12 is ESM and incompatible with this Nest 10
@@ -86,5 +85,38 @@ Generation uses the existing generator without auto-install, with branch-local
 generated output and temporary ignored .runtime files. The latter command runs a
 TypeScript build and unit tests with diagnostics enabled. DATABASE_URL is required
 for schema validation but these commands do not connect. No DB migration was applied.
-Actual row-lock concurrency, migration execution, restart persistence, HTTP and
-browser acceptance remain unverified. Login/register HTTP and user/email policy are deferred.
+Actual row-lock concurrency, migration execution, restart persistence, live DB HTTP and
+browser acceptance remain unverified.
+
+## Auth / me / boards HTTP batch (2026-10-12)
+
+Registered routes: POST /v1/auth/register (201), login (200), refresh (200), logout
+(204); GET /v1/me; GET/POST /v1/boards. Refresh also returns the required public User.
+Password/session/hash fields are explicitly excluded from public serializers. Email
+is stored and compared exactly; validation does not trim or lowercase. Existing
+register limits are password >=8 and nickname 1..30; LoginRequest has no password
+length restriction. Schema violations consistently return 422 INVALID_INPUT with
+code/message/details. Unknown keys are not separately rejected. Protected requests
+check session validity; no profile/password update, board detail/update/delete routes.
+
+PasswordService uses asynchronous Node scrypt: scrypt-v1 encoding, random 16-byte
+salt, 64-byte derived key, N=16384/r=8/p=1, maxmem=64MiB and timingSafeEqual. The
+versioned encoding allows future parameter migration. It handles full input without
+bcrypt's 72-byte truncation and introduces no extra password restriction. Unknown
+accounts use a syntactically valid dummy hash with the same KDF parameters and the
+same generic INVALID_CREDENTIALS response as wrong passwords. Operational login
+rate limits and KDF capacity tuning remain follow-up items.
+
+Board creation uses one transaction for board, OWNER membership and default columns
+할 일/하는 중/완료 at positions 0/1024/2048; only 완료 has is_done. Omitted color
+defaults to #5534DA; explicit strings are preserved. Response is Board with version
+ETag and no mandatory myRole. Listing selects only caller BoardMember rows, adds
+myRole, orders joined_at DESC/board_id DESC and fetches limit+1 (default20, range1..100).
+Opaque base64url JSON cursor stores joinedAt/boardId values. Next page filters by
+the stored boundary without requiring the anchor row to exist. New memberships
+appear on first-page refresh; no snapshot promise or cursor signing policy was added.
+
+HTTP tests use a Nest server plus explicit in-memory Prisma mocks, not PostgreSQL.
+Failure injection checks transaction scope and error propagation; it cannot prove
+actual database rollback, unique constraints, keyset query execution or concurrent
+session behavior. Live DB/BFF/browser acceptance remains separate and unexecuted.
