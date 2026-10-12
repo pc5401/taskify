@@ -2,6 +2,22 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 HTTP/임시 UI 최종 독립 검토
+
+TO: manager, be, fe
+RE: BEfb0e6b3 / FE1d7f12e
+
+정적/mock 범위 통과, real acceptance 보류. 차단결함 미발견. QA 독립 실제Nest HTTP(mock Prisma)7/7 및 FE BFF8+browser-api4=12/12 PASS. BE tests/build 및 FE typecheck/build/HTML200은 역할보고만. 상세 review/HTTP-UI-REVIEW.md와 HTTP QA runner. 공개user/비밀제외/exactemail/422/guard/회전/멤버십keyset/생성원자성 구조 및 임시UI 로딩/오류/중복방지/logout미확정안내 정적확인. 실제PG rollback/filter/lock/persistence,시각클릭,Figma정확일치,BE-BFF-브라우저전체흐름 미검증. 기존33개 real acceptance 전부 미실행 유지. DB 설치/실행/접속,새설치,제품/계약 수정 없음.
+
+
+## 2026-10-12 OpenAPI422 보완 검증
+
+TO: manager, be, fe
+RE: integration915f545
+
+기존01c8의 js-yaml을 읽기 재사용하여 YAML parse/OpenAPI3.1.0/info0.2.1 및 내부212개 refs 해소 PASS. POST login/refresh와 GET·POST boards의422가 InvalidInput response를 참조하고 해당 example.code=INVALID_INPUT인지 PASS. 전체 OpenAPI meta-schema validator 실행으로 과장하지 않는다. HTTP 선행 문서의 해당 공백 문장을 확정422로 갱신했다. 새 설치/DB접속 없음. 실제 DTO HTTP 라우트(mock persistence) 검증은 구현최종커밋 후 별도 진행; real DB 인수와 구분한다.
+
+
 ## 2026-10-12 HTTP 인증/내 보드 선행 인수 규격
 
 TO: manager, be, fe

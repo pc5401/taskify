@@ -1,6 +1,6 @@
 # Auth / me / boards HTTP 선행 인수 규격
 
-기준: 통합 8dabfd5 (b6b2282 기반과 이메일/페이지 경계 승인 포함), docs/contract/openapi.yaml v0.2.1 및 v0.2.1.md 승인 정책, feature-spec.md 3.4. 실제 API는 /v1, 브라우저 중계는 /api. 기존 QA001~013 및 AUTH-BFF001~009를 수정하지 않는다. 아래 모든 결과는 **미실행**이다. DB 설치/기동/접속 없이 인수 규격만 작성한다.
+기준: 통합915f545 (8dabfd5 승인 및 OpenAPI422 선언 포함), docs/contract/openapi.yaml v0.2.1 및 v0.2.1.md 승인 정책, feature-spec.md 3.4. 실제 API는 /v1, 브라우저 중계는 /api. 기존 QA001~013 및 AUTH-BFF001~009를 수정하지 않는다. 아래 모든 결과는 **미실행**이다. DB 설치/기동/접속 없이 인수 규격만 작성한다.
 
 각 절은 독립 인수 케이스다. HTTP 공개 응답은 계약 schema에 맞추며 password/passwordHash, 세션/회전 해시, 암호문 등 내부 저장 필드를 노출하지 않는다. 직접 BE auth의 accessToken/refreshToken은 승인된 공개 계약이고 브라우저 BFF는 user만 반환한다. 미정 정책을 구현 선택으로 확정하지 않는다.
 
@@ -19,13 +19,13 @@
 ## HTTP-003 Login 검증/오류/공개 응답
 
 요청:등록한 계정/맞는 password로 POST /v1/auth/login; 같은 email의 틀린 password; 존재하지 않는 email. BFF에도 승인 Origin으로 요청.
-기대:정상200 AuthResponse 및 신규 로그인 session. 틀린 password/없는 계정은 둘 다401 INVALID_CREDENTIALS이며 user/token/passwordHash 원문 없음. BFF 정상200 {user}/cookie, 실패401 유지. 로그인 요청 required email/password의 string/email 제약은 반드시 검증하나 login path에422 응답이 없으므로 schema 위반의 정확한 오류 매핑은 관리자 확인 대상으로 유지한다. register password8자 제약을 LoginRequest에 임의 추가하지 않는다.
+기대:정상200 AuthResponse 및 신규 로그인 session. 틀린 password/없는 계정은 둘 다401 INVALID_CREDENTIALS이며 user/token/passwordHash 원문 없음. BFF 정상200 {user}/cookie, 실패401 유지. 로그인 required email/password의 string/email schema 위반은422 INVALID_INPUT (915f545 선언). register password8자 제약을 LoginRequest에 임의 추가하지 않는다.
 불변:실패는 세션 발급/기존 세션 폐기 없음. 결과: 미실행.
 
 ## HTTP-004 Refresh HTTP 및 rotation/reuse
 
 요청:POST /v1/auth/refresh {refreshToken:R0}; 새 R1 재사용 정상 회전; 이미 소비한 R0 재사용; unknown/expired token. 누락/비string 입력은 schema 검증 대상으로 별도 실행.
-기대:정상200 **AuthResponse의 필수 user 포함**; 15분 access와 절대7일 만료 유지. unknown/expired/재사용 token401 UNAUTHENTICATED. 소비 R0 재사용은 해당 로그인 session 폐기, R1/현재 access도 거절, 다른 session 유지. 인증 실패와 DTO schema 위반을 구분하며 refresh path에는422가 선언되지 않아 DTO 오류의 정확한 code/status는 미확정으로 보고한다.
+기대:정상200 **AuthResponse의 필수 user 포함**; 15분 access와 절대7일 만료 유지. unknown/expired/재사용 token401 UNAUTHENTICATED. 소비 R0 재사용은 해당 로그인 session 폐기, R1/현재 access도 거절, 다른 session 유지. 인증 실패와 DTO schema 위반을 구분한다. 누락/비string DTO 위반422 INVALID_INPUT, schema상 string이지만 unknown/expired token은401 UNAUTHENTICATED (915f545 선언).
 불변:회전으로 expiresAt 연장 금지; 거절 시 새 credential 발급 금지; 재사용 이력 삭제 금지. 결과: 미실행. 세부 DB/경쟁 규격은 AUTH-BFF004~006,008.
 
 ## HTTP-005 Logout 현재 세션 즉시 차단
@@ -50,13 +50,13 @@
 ## HTTP-008 GET boards pagination/invalid cursor
 
 요청:limit 생략/유효 경계값/범위 밖/비정수, 정상 nextCursor 연속 요청, 손상된 cursor 요청. 고정 데이터로 페이지들을 합친다.
-기대:유효 limit1~100, 기본20 (OpenAPI parameter), nextCursor=null은 끝. 고정 데이터에서 승인 정렬을 따라 중복/누락 없이 다음 page. 잘못된 cursor422 INVALID_INPUT. limit schema 위반은 거절하며 /boards GET에 개별422 선언이 없는 점을 보고한다. 임의 cursor 서명/encryption 정책은 추가하지 않는다.
+기대:유효 limit1~100, 기본20 (OpenAPI parameter), nextCursor=null은 끝. 고정 데이터에서 승인 정렬을 따라 중복/누락 없이 다음 page. 잘못된 cursor422 INVALID_INPUT. limit schema 위반은422 INVALID_INPUT (915f545 선언). 임의 cursor 서명/encryption 정책은 추가하지 않는다.
 불변:board/member 읽기 불변. cursor는 마지막 항목 joined_at/board_id 경계를 저장한다. 첫 페이지 anchor를 삭제하고 같은 cursor로 요청해도 저장 경계 뒤 항목을200으로 계속 조회한다. 새로 참여한 보드는 새로고침한 첫 페이지에서 확인하며 기존 cursor에 snapshot/전체 변경 일관성을 요구하지 않는다. 결과: 미실행.
 
 ## HTTP-009 POST boards 기본값/입력/응답
 
 요청:인증 U1 POST /v1/boards {title:"QA board"}; description/color 명시 반복; title누락/비string/0자/81자, description501자, color비string. title1자/80자와 description500자 정상 경계.
-기대:정상201 Board 및 버전에 맞는 ETag. color 생략 #5534DA, 명시 color는 string 그대로이며 임의 색상 목록/hex 제약 금지. title/description은 CreateBoardRequest 제약. schema 위반은 거절하며 POST /boards 개별422 선언 부재 때문에 정확한 매핑 관리자 확인. 인증 없으면401 UNAUTHENTICATED, 브라우저 쓰기 Origin 누락/불일치403 FORBIDDEN. 생성에 If-Match 요구를 추가하지 않는다.
+기대:정상201 Board 및 버전에 맞는 ETag. color 생략 #5534DA, 명시 color는 string 그대로이며 임의 색상 목록/hex 제약 금지. title/description은 CreateBoardRequest 제약. schema 위반422 INVALID_INPUT (915f545 선언). 인증 없으면401 UNAUTHENTICATED, 브라우저 쓰기 Origin 누락/불일치403 FORBIDDEN. 생성에 If-Match 요구를 추가하지 않는다.
 불변:실패 시 기존 board/member/column 및 사용자 불변. 결과: 미실행.
 
 ## HTTP-010 POST boards transaction/기본 컬럼
@@ -68,9 +68,9 @@
 ## HTTP-011 승인 이메일 동일성
 
 요청: Case@example.test 등록 후 같은 password로 case@example.test 로그인; 같은 대소문자 email 로그인; 대소문자만 다른 형식 유효 email 등록; 양끝 공백 때문에 기존 email 형식에 어긋난 입력 등록/로그인.
-기대:입력 그대로 저장/비교하며 trim/lowercase 금지. 다른 대소문자 로그인401 INVALID_CREDENTIALS, 동일 문자열 로그인200. 대소문자 변형은 별도 email로 정상 등록201; 완전히 동일 문자열만409 EMAIL_TAKEN. 공백 입력을 trim하여 유효 계정으로 연결하거나 등록하지 않는다. 기존 format 검증에 따라 거절한다; login schema 오류 code/status 미명시 사항은 HTTP003과 동일하게 보고한다.
+기대:입력 그대로 저장/비교하며 trim/lowercase 금지. 다른 대소문자 로그인401 INVALID_CREDENTIALS, 동일 문자열 로그인200. 대소문자 변형은 별도 email로 정상 등록201; 완전히 동일 문자열만409 EMAIL_TAKEN. 공백 입력을 trim하여 유효 계정으로 연결하거나 등록하지 않는다. 기존 format 검증에 따라 거절한다; login schema 위반은422 INVALID_INPUT.
 불변:다른 문자열 로그인 실패가 기존 사용자 email/password/session을 변경하지 않는다. 결과: 미실행.
 
 ## 결과 및 인수 게이트
 
-새 HTTP001~011 전부 미실행. 기존22개도 상태 변경 없음. 모듈/DTO/mock/build 정적 검토를 실제 HTTP/PG/브라우저 인수로 승격하지 않는다. 아직 명시되지 않은 오류 매핑은 후속 구현의 선택을 승인 근거로 간주하지 않는다. 이메일/삭제 anchor 정책은8dabfd5 승인대로 확정했다.
+새 HTTP001~011 전부 미실행. 기존22개도 상태 변경 없음. 모듈/DTO/mock/build 정적 검토를 실제 HTTP/PG/브라우저 인수로 승격하지 않는다. login/refresh/GET·POST boards의422 INVALID_INPUT은915f545 선언대로 확정했다. malformed JSON 등 여전히 명시되지 않은 사항을 구현 선택으로 승인하지 않는다. 이메일/삭제 anchor 정책은8dabfd5 승인대로 확정했다.
