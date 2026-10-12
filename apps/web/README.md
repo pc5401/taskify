@@ -139,7 +139,7 @@ from OpenAPI. Login does not inherit register's password minimum. Lists use
 server order/myRole/nextCursor without card/member counts unsupported by the
 contract. Creation omits color if no selection, preserving server default.
 Pagination keeps opaque cursor bookmarks, flags422 instead of empty success,
-and returns to first page after creation. Board detail and other workspace
+and returns to first page after creation. Other workspace
 features have no active fake links. Logout502 with confirmed local termination
 shows the upstream-unconfirmed notice; other failures retain an explicit error.
 Forms have labels, loading/error states, repeated-submit guards and abort cleanup;
@@ -187,3 +187,41 @@ HTTPS browser cookie enforcement, browser shutdown/storage/visual/click checks,
 natural900-second/seven-day elapsed tests, or full AUTH-BFF/HTTP acceptance.
 See agents/fe/LIVE-BFF-RESULT.md for scope and evidence. Services are stopped
 through parent coordination after the full validation batch.
+
+## Cycle02 read-only board UI
+
+User approved the board read rules and a new temporary board UI followed by
+Figma correction. The mandatory Figma design-to-code skill was read and frame
+6:69 context/screenshots requested once; the Starter call limit still blocked
+it. Existing root metadata established sidebar/topbar/columns. This temporary
+layout is not a high-fidelity match. Precise assets/fonts/layout correction
+and visual acceptance remain pending; no repeated Figma calls were made.
+
+New GET BFF routes /api/boards/{boardId}, /columns and /cards permit only fixed
+UUID paths and allowed read suffixes. Mutations return405. Card queries forward
+cursor/limit/columnId/assigneeId/tag with URLSearchParams, preserve exact tag and
+empty tag, reject repeated known scalars and malformed UUID/limit with422,
+and omit unrelated query keys. Upstream403/401/422/ETag and token redaction
+remain intact. Browser-supplied Authorization is never trusted. Server session
+storage/refresh remains in the existing PostgreSQL BFF implementation.
+
+My-board tiles now link to /boards/{boardId}. The read-only kanban uses server
+columns/cards/blocked/warnings. Viewer has the same read flow; FE does not
+compute membership policy or add myRole to Board. Board/columns/all card pages
+must all succeed before content renders. 403 displays access denial without
+partial content;401 redirects login;422/loading/empty/other errors are distinct.
+Old content is scoped to the board+filter request key and aborted on changes.
+No card creation/move/detail-edit buttons or invented assignee names appear.
+
+The browser client allCards follows every opaque nextCursor, retains all filters
+and AbortSignal, preserves server order, deduplicates IDs, and errors on repeated
+cursors rather than showing an incomplete-success list. Column/tag filter UI
+is provided; assigneeId/limit are supported via browser client and query URL
+without inventing a member directory/UUID-entry product flow. Tag checkbox
+allows exact empty-string filter separately from no tag filter. Card counts
+are derived from the fully loaded filtered list, not guessed backend counts.
+
+Validation: mock18/18 and TypeScript PASS; Next production build PASS (dynamic
+board page and three BFF routes). Live runtime and QA verification are managed
+by parent; current actual-read results are recorded in FE OUTBOX when available.
+Existing cycle01 live41 checks are historical, not cycle02 acceptance evidence.

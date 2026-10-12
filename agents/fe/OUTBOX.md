@@ -1,6 +1,46 @@
 # FE OUTBOX
 
 최신이 위다. 지우지 않는다.
+## Cycle02 읽기 BFF/임시칸반 구현
+
+TO: manager, qa, be
+RE: 사용자조회정책전체/새임시UI 승인
+
+QA5e3e6bd READ001~011선행읽고approvedcontract1cc619f를제품코드전병합.
+Figma mandatoryskill읽은뒤6:69context스크린샷포함1회Starter한도실패; 사용자
+새임시UI후디자인보정예외승인에따라metadata/기존UI/계약으로구현. 정밀일치PASS아님.
+GET /api/boards/{uuid},/columns,/cards fixedtarget검증/GETonly; cardquery
+cursor/limit/columnId/assigneeId/tag whitelist인코딩, repeatedscalar/UUID/limit422,
+exact/emptytag보존/unknownkey별도거절없음. 서버Bearer/cookie/PGrefresh/token
+redaction/ETag/error/no-store재사용. browserallCards 끝page까지query/signal유지,
+serverorder/id중복방지/repeatedcursorerror. /boards/[boardId]읽기kanban와내보드
+실제Link. Board→columns→allcards모두성공전partialcontents없고requestkeyscope,
+401login/403비노출/422/loading/empty구분. FErole계산/BoardmyRole/Cardcompleted없음.
+Cardblocked/warnings서버값만표시. 생성/이동/쓰기버튼없음. column/tagUIfilter와
+API/URLassigneeId/limit전달지원, memberdirectory/UUID입력제품flow발명없음.
+
+mock18/18및typecheckPASS, NextproductionbuildPASS dynamicboardpage+GET3route확인.
+부모web3002상세SSR200/초기로딩/쓰기control없음/tokenfield없음보조확인은UIroute
+smoke이며실제browserdata/click인수아님. QAactualBFFread독립fixture검증진행중;
+FE추가liveharness중복없음. cycle01의41checks를cycle02증거로확대하지않는다.
+부모dev자동next-env경로변경은trackedproductionbaseline으로정리; 수동제품정책변경없음.
+README/CYCLE02-PREP에Figma보정및검증한계기록. 서버stop은부모runtime조율.
+
+## Cycle02 조회 FE 선행 준비
+
+TO: manager, qa, be
+RE: 보드상세/컬럼/카드 읽기 및권한
+
+integration430bfd1/QA5e3e6bdd반영, READ001~011과PENDING읽었다.
+Figma mandatorydesign-to-code skill읽고 기존detail6:69context를스크린샷포함
+1회요청했으나Starter한도실패. 반복없음. 새임시UI예외와조회정책은부모가
+사용자에게질문했으므로승인전제품코드대기. CYCLE02-PREP.md에BFFstrictUUID/
+GET허용target/query whitelist,allcardpages순차조회/id중복방지/repeatedcursor/
+AbortSignal,서버권한/error/blocked/warnings보존,실제Link/빈상태/UI범위기록.
+Next설치page/route docs읽어dynamicparamsPromise확인. 정책임의확정없음.
+이번DB/API/브라우저검증미실행, 기존41checks재실행없음. main병합/push 및
+카드생성/이동은이번범위제외. 사용자승인과계약/QA PENDING갱신후재개한다.
+
 ## 2026-10-12 실제 BFF HTTP/PostgreSQL 검증
 
 TO: manager, qa, be
