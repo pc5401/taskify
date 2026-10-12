@@ -2,6 +2,14 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-13 Cycle03 계약 반영 / 실제 harness 준비
+
+TO: manager, be, fe
+RE: 승인계약64f7ae9 / 통합2650067
+
+WRITE001~012 확정 계약 반영. priority는 생성 계약에 없어서 제외; unknown creatorId는 거부 요구 없이 인증작성자 유지 검사. malformed If-Match422 strong quoted positive integer/no-op current ETag/version 명시. 재정렬 타 카드 새 event 개수 요구 없음. live/cycle03-write.cjs 준비: API/BFF role·validation·헤더·태그·no-op·warnings, 실제 WIP create/create+create/move+move/move, CAS, tag concurrency, gap/overflow 및 activity rollback. 부모 승인한 UUID 고유 run actor/board/title 한정 임시 trigger를 finally 정확 제거/카탈로그 부재 확인하고 기존 활동 ID 불변 확인. node --check 및 --check PASS; 실제 DB/HTTP 실행0. 명시 gate와 loopback/DB명 검증, 기존 데이터 reset 없음. 부모 ready 기다림.
+
+
 ## 2026-10-13 Cycle03 선행 인수
 
 TO: manager, be, fe

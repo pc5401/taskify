@@ -1,14 +1,14 @@
 # Cycle03 카드 생성·이동 선행 인수
 
-기준 integration6528fea, 기존 OpenAPI CreateCardRequest/MoveCardRequest/Card 및 v0.2.1 트랜잭션 규칙. shared/cycle-03-preparation.md의 세 제안은 부모가 전달한 2026-10-13 사용자 승인으로 확정했다. 관리자 계약 보완 SHA를 받으면 근거를 추가한다. 아래 모두 미실행이며 제품 구현을 승인 근거로 삼지 않는다.
+기준 승인계약64f7ae9 / 통합2650067 (선행 integration6528fea), 기존 OpenAPI CreateCardRequest/MoveCardRequest/Card 및 v0.2.1 트랜잭션 규칙. shared/cycle-03-preparation.md의 세 제안은 부모가 전달한 2026-10-13 사용자 승인으로 확정했다. 계약 보완401/422CardWriteInvalid/409CardMoveConflict를 반영했다. 아래 모두 미실행이며 제품 구현을 승인 근거로 삼지 않는다.
 
 POST /columns/{columnId}/cards 생성, POST /cards/{cardId}/move 이동만 포함한다. 별도 카드 PATCH/삭제/의존 변경/태그 편집 HTTP는 제외한다. SQL 준비 fixture는 제품 생성 기능 통과 증거가 아니다.
 
 | 사례 | 인수 문장과 요청 | 기대 | 실패 또는 no-op 불변 |
 |---|---|---|---|
-| WRITE001 | Owner/Editor가 유효 생성 body 제출, 인증사용자와 다른 creator 입력으로 작성자 위조 확인 | 201 공개 Card, ETag=version; 작성자는 인증사용자. 끝에 추가. 선택필드/태그 연결 정확 | 비밀/session 필드 비노출; 다른 보드 불변 |
+| WRITE001 | Owner/Editor가 유효 생성 body 제출, 계약 외 creatorId 입력은 무시하고 인증사용자를 작성자로 저장하는지 확인(unknown field422 요구 없음) | 201 공개 Card, ETag=version; 작성자는 인증사용자. 끝에 추가. 선택필드/태그 연결 정확 | 비밀/session 필드 비노출; 다른 보드 불변 |
 | WRITE002 | Viewer/외부/PENDING/없는 시작 column 또는 card의 생성·이동 | 접근 불가 403; 비멤버 내용 비노출. revoked/expired/missing 인증401 | card/column/tag/link/activity 모두 불변 |
-| WRITE003 | UUID/body/필드 길이/타입/date/priority 검증 및 잘못된 연결. 권한 확인 뒤 foreign column/assignee/predecessor/beforeCard | 계약대로422 INVALID_INPUT 또는 CROSS_BOARD; 접근 가능한 시작 자원부터 검증 | 신규 card/tag/link/activity 없음; source와 destination 불변 |
+| WRITE003 | UUID/body/필드 길이/타입/date 검증 및 잘못된 연결. 권한 확인 뒤 foreign column/assignee/predecessor/beforeCard | 계약대로422 INVALID_INPUT 또는 CROSS_BOARD; 접근 가능한 시작 자원부터 검증 | 신규 card/tag/link/activity 없음; source와 destination 불변 |
 | WRITE004 | 이동 If-Match 누락, 오래된 version, 정상 최신 version | 428 IF_MATCH_REQUIRED; 409 VERSION_CONFLICT(details.version 현재값); 정상200 Card+ETag | 실패 card.column_id/position/version/updated_at 및 activity 불변 |
 | WRITE005 | WIP 한 자리 남은 destination에 다른 요청으로 동시 create/create, create/move, move/move | 각 경합 정확히 하나 성공, 하나409 WIP_LIMIT_EXCEEDED; count<=limit | 실패 요청 card/tag/activity 잔존 없음, 이동 source 유지 |
 | WRITE006 | 다른 목적지로 같은 card+같은 If-Match 동시 이동 | 하나만 실제 변경 성공; 다른 요청409 VERSION_CONFLICT | 실패 목적지에 phantom placement/activity 없음; version 단일 변경 |
@@ -27,6 +27,6 @@ POST /columns/{columnId}/cards 생성, POST /cards/{cardId}/move 이동만 포�
 
 API 실검증/BFF 실검증/실제 Nest+mock persistence/순수 helper mock/정적 검토/실브라우저 클릭은 따로 기록한다. CUA 표면이 없으면 브라우저 미실행을 유지한다. 기존33와 READ11의 공백을 자동 통과시키지 않는다. 서버 종료는 부모 조율이다.
 
-## 계약 확인 요청
+## 계약 확인 완료
 
-기존 OpenAPI 생성·이동 response에401 및 INVALID_INPUT422 예시가 충분하지 않다. 관리자 보완을 기다리며 정책을 바꾸지 않는다. rebalance 시 위치가 바뀐 카드의 activity 종류/개수, 허용된 no-op의 ETag 처리와 malformed If-Match 구체 코드는 계약 보완 근거를 받아 검사한다. 행 변경이나 활동 개수를 임의로 정하지 않는다.
+64f7ae9에401/422 복합오류 및 move409 복합오류를 선언했다. If-Match는 strong quoted positive integer만 허용, 형식 오류422 INVALID_INPUT/누락428 IF_MATCH_REQUIRED다. no-op은 현재 ETag/version 반환. 재정렬 다른 카드에 새 활동 이벤트/개수를 요구하지 않고 기존 이벤트 payload non-null 및 원자성만 확인한다. CreateCardRequest에 priority가 없으며 unknown field의 새로운 거부 정책을 요구하지 않는다.
