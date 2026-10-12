@@ -1,6 +1,6 @@
 # Cycle02 조회·권한 선행 인수 문장
 
-기준 승인계약1cc619f(430bfd1 이후 사용자승인 반영), docs/contract/openapi.yaml v0.2.1, feature-spec.md 역할/보드/초대/의존정책, erd-api.md 페이지, v0.2.1.md 인증session. 이번범위 GET /v1/boards/{boardId}, /columns, /cards 및BFF읽기중계. 카드생성/이동/쓰기HTTP는포함하지않는다. 결과전부 **미실행**. 2026-10-12 사용자승인 조회정책을 아래 기대값에 반영했다. 제품구현 자체를 승인근거로 삼지 않는다.
+기준 승인계약1cc619f(430bfd1 이후 사용자승인 반영), docs/contract/openapi.yaml v0.2.1, feature-spec.md 역할/보드/초대/의존정책, erd-api.md 페이지, v0.2.1.md 인증session. 이번범위 GET /v1/boards/{boardId}, /columns, /cards 및BFF읽기중계. 카드생성/이동/쓰기HTTP는포함하지않는다. 선행 작성 당시 결과전부 **미실행**이며 아래 각 사례의 미실행 표기는 작성시점 기록이다. 최신 실행 결과는 마지막 절을 참조한다. 2026-10-12 사용자승인 조회정책을 아래 기대값에 반영했다. 제품구현 자체를 승인근거로 삼지 않는다.
 
 기존QA13/AUTH-BFF9/HTTP11을보존한다. 직접격리DB fixture로카드/태그/멤버/선행을준비할수있으나실제카드생성·이동제품API인수로표기하지않는다. 부모가관리하는기존보존cluster에서runUUID 신규fixture만사용하며reset/기존데이터삭제금지.
 
@@ -81,3 +81,7 @@
 
 이전 PENDING order/cursor/filter/missing/warnings와machine401/403/422는사용자승인및OpenAPI보완으로확정됐다. position ASC/id ASC,cardcursorboard+filtersbinding/deletedboundary/422/no snapshot,AND/exacttag/foreignvalidempty,missing403,blocked및done-card-onlywarnings를위기대값에반영했다.
 scalar반복queryarray422,tagempty추가minLength없음,알수없는querykey별도거부정책추가없음도근거기록했다. 결과는아직미실행이며mock/실DB/HTTP/실browser를구분할예정이다.
+
+## 2026-10-13 실행 결과 갱신
+
+READ001~011의 서버 범위 부분 증거를 agents/qa/live/CYCLE02-RESULTS.md에 매핑했다. QA 독립 실제 19checks PASS(FE53c1b52/BEc08f3e3). 최신 FE7509f57 원문limit 수정은 static/독립mock19 PASS이며 실제 재실행은 아니다. 실브라우저/시각 및 명시된 미실행 범위는 유지한다. 전체 사례를 자동 완전통과 처리하지 않는다.
