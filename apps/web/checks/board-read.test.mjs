@@ -2,10 +2,22 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Bff } from '../src/server/bff.ts';
 import { readTarget } from '../src/server/read-target.ts';
+import { parseBoardFilters } from '../src/board-filters.ts';
 import { createBrowserApi, CardPaginationError } from '../src/browser-api.ts';
 import { encrypt, sessionHash } from '../src/server/crypto.ts';
 const id='00000000-0000-4000-8000-000000000001',other='00000000-0000-4000-8000-000000000002';
 const path=`/boards/${id}`,key=Buffer.alloc(32,5),cookie='b'.repeat(64),hash=sessionHash(cookie);
+
+test('UI and BFF reject non-digit raw limits before numeric conversion',()=>{
+ for(const value of ['1e1',' 10 ','','  ','+10','0x10','1.0','0','101']) {
+  const query=new URLSearchParams({limit:value});
+  assert.equal(parseBoardFilters(query),null);
+  assert.equal(readTarget(new Request(`http://web.test/api/x?${query}`),`${path}/cards`).status,422);
+ }
+ for(const value of ['1','100','010']) assert.equal(parseBoardFilters(new URLSearchParams({limit:value})).limit,Number(value));
+ assert.equal(parseBoardFilters(new URLSearchParams('limit=1&limit=2')),null);
+ assert.deepEqual(parseBoardFilters(new URLSearchParams('tag=%20Alpha%20')), {tag:' Alpha '});
+});
 test('BFF only fixed UUID read targets, rejects path injection and mutations',async()=>{
  for(const target of ['/boards/not-uuid',`${path}/../me`,`${path}?evil=1`,`${path}/members`,`${path}/cards/extra`]) assert.equal(readTarget(new Request('http://web.test/api/x'),target).status,422);
  assert.equal(readTarget(new Request('http://web.test/api/x',{method:'POST'}),path).status,405);

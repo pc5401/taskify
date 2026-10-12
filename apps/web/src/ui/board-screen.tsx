@@ -4,7 +4,7 @@ import type { FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { BrowserApiError, CardPaginationError, createBrowserApi } from '../browser-api';
-import type { CardFilters } from '../browser-api';
+import { parseBoardFilters } from '../board-filters';
 import type { Board, Card, Column } from '../contract';
 import { buttonClass, ErrorMessage, inputClass } from './shared';
 const api = createBrowserApi();
@@ -18,12 +18,8 @@ export function BoardScreen({ boardId }: { boardId: string }) {
     const controller = new AbortController(); setLoading(true); setData(null); setError(null); setDenied(false);
     void (async () => {
       try {
-        const query = new URLSearchParams(search), filters: CardFilters = {};
-        for (const name of ['columnId', 'assigneeId', 'tag', 'limit'] as const) {
-          if (query.getAll(name).length > 1) throw new BrowserApiError(422, { code: 'INVALID_INPUT' });
-          const value = query.get(name);
-          if (value !== null) { if (name === 'limit') filters.limit = Number(value); else filters[name] = value; }
-        }
+        const filters = parseBoardFilters(new URLSearchParams(search));
+        if (!filters) throw new BrowserApiError(422, { code: 'INVALID_INPUT' });
         // Fetch the board first so a denied board never renders a partial title/column/card set.
         const board = await api.board(boardId, controller.signal);
         const columns = await api.columns(boardId, controller.signal);

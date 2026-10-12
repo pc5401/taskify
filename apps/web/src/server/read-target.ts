@@ -16,7 +16,7 @@ export function readTarget(request: Request, path: BffPath): string | Response {
     if (values.length === 0) continue;
     const value = values[0];
     if (['columnId', 'assigneeId'].includes(name) && !boardUuid.test(value)) return invalid();
-    if (name === 'limit' && (!Number.isInteger(Number(value)) || Number(value) < 1 || Number(value) > 100)) return invalid();
+    if (name === 'limit' && (!/^\d+$/.test(value) || !Number.isInteger(Number(value)) || Number(value) < 1 || Number(value) > 100)) return invalid();
     query.set(name, value);
   }
   return path + (query.size ? `?${query}` : '');
