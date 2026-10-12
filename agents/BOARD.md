@@ -1,5 +1,14 @@
 # 보드
 
+## 2026-10-11 BFF 기반 배치
+
+사용자가 B안(Next 서버 token 보관, browser HttpOnly session cookie)을 승인했다.
+보드·인증·BFF 승인 기준은 docs/contract/v0.2.1.md다.
+QA의 auth-bff 인수 문장 작성 후 BE 세션 저장/발급/회전/폐기 서비스와
+FE Next 서버 중계를 병행 구현한다. 업무 API 전체/페이지 UI는 이번 배치 제외다.
+DB는 설치/실행/연결하지 않는다. 스키마와 SQL, mock 검증만으로 DB 통과를 표시하지 않는다.
+QA는 구현 완료 커밋을 독립 검토한다. 결과는 codex/orchestration에서 결합하며 main/push와 구분한다.
+
 ## 2026-10-11 Codex 조율 시작
 
 사용자가 “기존 BE-1을 인계받아 하위 에이전트로 조율”을 요청했다.
