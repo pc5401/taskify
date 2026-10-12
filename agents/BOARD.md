@@ -7,7 +7,8 @@ Astra 사용을 요청했다. 해설 역할은 docs/learning 및 agents/explaine
 제품 코드·정책을 변경하지 않는다. 이번 실행 요청 모델은 gpt-6-astra/high다.
 사용자가 이후 main 병합과 push를 승인했다. 기존 main의 미커밋 QA/Nest 원본은
 Git stash d8cdc75dd6a9d2da0f04d09961b1de011b976aec에 보존했다.
-원격 확인·학습 문서 검토 후 검증된 통합 이력을 main에 fast-forward하고 push한다.
+학습 문서·역할 규칙을 검토해 b9141e7로 커밋했다. main을 71e3dca에서 fast-forward했고
+GitHub main push 성공 및 원격 동일 커밋 확인을 완료했다. 이 완료 기록은 후속 문서 커밋으로 남긴다.
 
 ## 2026-10-12 실제 DB 연결 검증 배치
 
