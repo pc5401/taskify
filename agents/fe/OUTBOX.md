@@ -162,3 +162,8 @@ RE: BE-1 전환 및 복구
 
 TO: manager
 아직 쓸 내용 없음. FE-1 대기.
+
+## Cycle02 QA limit 회귀 수정
+- URL limit 원문을 digits 및 integer 1..100으로 검증한 뒤 변환한다. UI와 BFF 모두 1e1/공백/+10/소수/hex를 422로 처리한다.
+- UI parser와 BFF의 동일 입력 회귀 검사 추가: mock 19/19 및 typecheck PASS. Next production build PASS.
+- 독립 QA 실제 HTTP 읽기 19 PASS는 부모 보고 수신. 브라우저 unavailable이며 SSR shell HTTP와 실제 click/visual 검증을 구분한다. 임시 UI의 Figma 정밀 보정은 후속이다.
