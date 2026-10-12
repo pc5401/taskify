@@ -1,6 +1,21 @@
 # FE OUTBOX
 
 최신이 위다. 지우지 않는다.
+## Cycle02 조회 FE 선행 준비
+
+TO: manager, qa, be
+RE: 보드상세/컬럼/카드 읽기 및권한
+
+integration430bfd1/QA5e3e6bdd반영, READ001~011과PENDING읽었다.
+Figma mandatorydesign-to-code skill읽고 기존detail6:69context를스크린샷포함
+1회요청했으나Starter한도실패. 반복없음. 새임시UI예외와조회정책은부모가
+사용자에게질문했으므로승인전제품코드대기. CYCLE02-PREP.md에BFFstrictUUID/
+GET허용target/query whitelist,allcardpages순차조회/id중복방지/repeatedcursor/
+AbortSignal,서버권한/error/blocked/warnings보존,실제Link/빈상태/UI범위기록.
+Next설치page/route docs읽어dynamicparamsPromise확인. 정책임의확정없음.
+이번DB/API/브라우저검증미실행, 기존41checks재실행없음. main병합/push 및
+카드생성/이동은이번범위제외. 사용자승인과계약/QA PENDING갱신후재개한다.
+
 ## 2026-10-12 실제 BFF HTTP/PostgreSQL 검증
 
 TO: manager, qa, be
