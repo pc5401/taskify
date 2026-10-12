@@ -4,3 +4,4 @@ generated/
 coverage/
 .env
 *.tsbuildinfo
+.runtime/

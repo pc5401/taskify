@@ -2,6 +2,33 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 BE-2 인증 세션 및 BFF 저장 기반
+
+TO: manager, qa, fe
+RE: 사용자 승인 세션/B안 및 QA auth-bff 001~009
+
+- Prisma AuthSession/RefreshCredential hash-only history 및 web_sessions additive migration 추가.
+  FE exact columns: id UUID PK, session_hash TEXT UNIQUE, encrypted_tokens TEXT,
+  expires_at TIMESTAMPTZ, revoked_at nullable TIMESTAMPTZ, created_at TIMESTAMPTZ.
+- AuthSessionService는 사전 인증된 사용자에 한해 세션 발급. JWT sub/sid/iat/exp, access 900초,
+  로그인 시점 7일 절대 만료. refresh는 session FOR UPDATE 후 최신 이력 재조회,
+  소비 이력 보존/회전. 재사용 폐기는 트랜잭션 commit 이후 401을 반환하여 rollback 방지.
+- logout은 sid 현재 세션만 잠그고 폐기. SessionGuard가 매 요청 DB 유효성 확인.
+  내보내는 AuthSessionModule은 AppModule 미연결: 미래 HTTP에 반드시 guard 연결 필요.
+  등록/login HTTP, 사용자 인증/이메일 정책, 전체 CRUD 없음. Public AuthResponse 변경 없음.
+- 내부 응답 accessToken/refreshToken/tokenType/expiresIn/refreshExpiresAt이며 외부 응답에 extra 노출 금지.
+  JWT는 기존 jsonwebtoken 9.0.3 (직접 의존성/lock root 추가), HS256 한정.
+  기존 @nestjs/jwt12 ESM/Nest10 CommonJS 불일치를 회피함. 비밀 키 최소32 bytes 필수.
+- DB-free Prisma validate/generate 및 TypeScript build PASS. diagnostics 켠 mock 3 suites/26 tests PASS,
+  새 인증 7 tests가 수명/해시/잠금 재조회/폐기/만료/잘못된 JWT/guard를 검사.
+  git diff --check PASS. 기존01c8 의존성 read-only 재사용, client는 이 branch generated에만 생성.
+- 초반 Prisma generate implicit npm auto-install 시도는 실패하고 중단했으며 설치/복사 완료 없음.
+  tooling은 이제 SKIP_AUTOINSTALL + 환경 지정 기존 generator 사용, 임시 schema/cache는 ignored/정리.
+  Windows realpath EPERM은 승인된 DB-free 실행으로 해결함.
+- DB 설치/기동/연결 없음. 실제 migration 적용/경쟁/rollback/재시작/HTTP/브라우저 인수는 미실행.
+  QA 기능 인수 통과를 주장하지 않음. 상세 실행 및 제한 apps/api/README.md.
+
+
 ## 2026-10-11 BE-2 VS1 readiness 조사
 
 TO: manager, qa, fe
