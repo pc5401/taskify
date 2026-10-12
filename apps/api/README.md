@@ -165,3 +165,33 @@ DB/HTTP checks against parent-managed runtime, using new isolated fixtures only.
 The approved run-owned anchor is deleted for cursor validation; all other fixtures
 remain. See agents/be/CYCLE02-RESULT.md. Independent QA/browser acceptance and
 runtime shutdown are separately coordinated; this report does not mark them passed.
+
+## Cycle03 card creation and movement
+
+POST /v1/columns/:columnId/cards and POST /v1/cards/:cardId/move implement
+approved contract64f7ae9 and QA WRITE001–012. Only OWNER/EDITOR write. Source
+missing/nonmember403; verified missing target422 INVALID_INPUT, foreign target422
+CROSS_BOARD. Creator is authenticated user; unknown request fields are ignored.
+Optional description cannot be null. dueAt requires RFC3339 time and timezone.
+
+First position0 and gap1024 are implementation choices. Placement uses midpoint;
+no gap or Int32 overflow rebalances the destination to0/1024/... . Only changed
+existing positions increment version/updatedAt. Same-column unchanged order is a
+no-op preserving version, ETag and activity; If-Match is still checked first.
+
+Transactions lock source/destination columns in UUID order, then destination cards
+and source card in UUID order. Source column is reread after locking; a changed
+source retries at most3 transactions, then returns VERSION_CONFLICT. Destination
+locks serialize WIP and ordering; no board-wide lock substitutes for them. Move
+also uses a version-constrained update. WIP excludes the moving card. Card, tag
+links, newly created tags and actor CARD_CREATED/CARD_MOVED activity are atomic.
+
+Tag canonical keys are PostgreSQL lower(name), sorted with C collation before
+upsert. Request duplicates are removed by that database-derived key. Expression
+unique-index upsert preserves an existing spelling and original whitespace, and
+serializes concurrent case variants. No schema/migration changes.
+
+Build and10 suites/64 tests pass using existing dependencies. Unit evidence covers
+position boundaries, RFC3339, no-op, stale version, self-before and Viewer rejection.
+Actual concurrency/WIP/rollback validation uses the independent QA cycle03 harness;
+live results and runtime cleanup are recorded separately after parent coordination.

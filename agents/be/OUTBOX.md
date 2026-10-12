@@ -1,3 +1,11 @@
+## 2026-10-13 cycle03 구현 준비
+
+TO: manager, qa, fe
+RE: cycle03 승인 및 QA 선행
+계약64f7ae9/QA6e3b8e9 기준 생성·이동만 구현. build 및10 suites64 tests PASS.
+기술선택/잠금순서/최대3회 retry/태그PG lower/위치재배치 apps/api/README.md 기록.
+실제 QA harness는 부모 runtime ready 후 실행; 동시성/DB롤백 아직 통과 주장하지 않음.
+DBschema/migration 변경없음, 기존fixture/data reset없음. 서버는 부모 조율.
 # BE OUTBOX
 
 최신이 위다. 지우지 않는다.
