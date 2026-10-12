@@ -55,3 +55,17 @@ Auth/me/boards API ran against this DB and an API-only restart reused environmen
 while the DB stayed running. FE/QA live reports are independently owned evidence.
 Runtime secrets remain ignored and are not committed or printed. DB stays running
 for independent QA; parent controls final pg_ctl fast shutdown with data preserved.
+
+## Coordinated shutdown
+
+After QA independently passed the five Owner checks, parent authorized normal
+shutdown. `isolated-db.cjs stop` completed pg_ctl fast/wait shutdown: server stopped.
+Subsequent status reported no server; direct connection returned ECONNREFUSED on55432.
+HTTP probes confirmed API3301 and Next3002/3003 unavailable. The data directory and
+PG_VERSION remain present; fixtures were retained, with no reset/drop/data deletion.
+
+To resume, set TASKIFY_API_DEPENDENCIES to the existing 01c8 API node_modules,
+run `node scripts/isolated-db.cjs start` from this BE apps/api checkout, then `connect`.
+Do not use init for the retained cluster. `prepare` preserves existing secrets;
+`node scripts/isolated-api.cjs` starts the built API with the same ignored environment.
+FE workers are restarted separately in their owned checkout if authorized.

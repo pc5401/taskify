@@ -143,3 +143,5 @@ nonsecret metadata only. Native binaries are reused read-only without installati
 `node scripts/live-db-regression.cjs` requires the exact isolated cluster and retains
 all fixture data. Final `stop` requires parent coordination and uses pg_ctl fast
 shutdown, preserving data. Runtime secrets/files must never be printed or committed.
+
+Final coordinated cleanup: pg_ctl fast shutdown completed;55432 refused connections and API3301/Next3002/3003 were unavailable. Data/fixtures retained. Resume the retained cluster with isolated-db.cjs start/connect, never init or reset; the existing ignored environment preserves keys.

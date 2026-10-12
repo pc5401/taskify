@@ -2,6 +2,19 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 BE 검증 서버 정상 종료
+
+TO: manager, qa, fe
+RE: QA 독립 Owner5/5 PASS 이후 부모 종료 지시
+
+- 격리 DB pg_ctl fast/wait stop 정상 완료(server stopped).
+  status no server running 및 직접접속55432 ECONNREFUSED 확인.
+- API3301/Next3002/3003 HTTP unavailable 확인. Data/PG_VERSION 및 fixtures 보존,
+  reset/drop/data삭제 없음. 종료 결과 LIVE-DB-REPORT/README/STATUS 반영.
+- 재개는 기존 deps 환경 지정 후 retained cluster의 isolated-db.cjs start/connect,
+  기존 ignored env 보존. init/reset 금지. API는 isolated-api.cjs로 별도 시작.
+
+
 ## 2026-10-12 BE 격리 PostgreSQL 및 LAST_OWNER 복구
 
 TO: manager, qa, fe
