@@ -1,6 +1,6 @@
 # Cycle03 카드 생성·이동 선행 인수
 
-기준 승인계약64f7ae9 / 통합2650067 (선행 integration6528fea), 기존 OpenAPI CreateCardRequest/MoveCardRequest/Card 및 v0.2.1 트랜잭션 규칙. shared/cycle-03-preparation.md의 세 제안은 부모가 전달한 2026-10-13 사용자 승인으로 확정했다. 계약 보완401/422CardWriteInvalid/409CardMoveConflict를 반영했다. 아래 모두 미실행이며 제품 구현을 승인 근거로 삼지 않는다.
+기준 승인계약64f7ae9 / 통합2650067 (선행 integration6528fea), 기존 OpenAPI CreateCardRequest/MoveCardRequest/Card 및 v0.2.1 트랜잭션 규칙. shared/cycle-03-preparation.md의 세 제안은 부모가 전달한 2026-10-13 사용자 승인으로 확정했다. 계약 보완401/422CardWriteInvalid/409CardMoveConflict를 반영했다. 선행 작성 당시 아래 모두 미실행이며 제품 구현을 승인 근거로 삼지 않는다. 최신 결과는 마지막 절과 별도 RESULTS를 참조한다.
 
 POST /columns/{columnId}/cards 생성, POST /cards/{cardId}/move 이동만 포함한다. 별도 카드 PATCH/삭제/의존 변경/태그 편집 HTTP는 제외한다. SQL 준비 fixture는 제품 생성 기능 통과 증거가 아니다.
 
@@ -30,3 +30,7 @@ API 실검증/BFF 실검증/실제 Nest+mock persistence/순수 helper mock/정�
 ## 계약 확인 완료
 
 64f7ae9에401/422 복합오류 및 move409 복합오류를 선언했다. If-Match는 strong quoted positive integer만 허용, 형식 오류422 INVALID_INPUT/누락428 IF_MATCH_REQUIRED다. no-op은 현재 ETag/version 반환. 재정렬 다른 카드에 새 활동 이벤트/개수를 요구하지 않고 기존 이벤트 payload non-null 및 원자성만 확인한다. CreateCardRequest에 priority가 없으며 unknown field의 새로운 거부 정책을 요구하지 않는다.
+
+## 2026-10-13 최신 결과
+
+독립 실제19checks PASS(run c5f04bf7-7c3e-4efb-8e81-22efb42f7aa3), BE1618099/FEb785965 기준. WRITE001~012 부분 증거와 미실행 범위는 agents/qa/live/CYCLE03-RESULTS.md에 매핑했다. BE 서비스/DTO unit15 및 FE mock22 독립 PASS는 actual과 별도다. 전체 사례·기존업무를 자동 완전통과 처리하지 않는다. 실제 브라우저 표면 없어 클릭/시각 미실행 유지.
