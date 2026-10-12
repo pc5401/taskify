@@ -70,6 +70,8 @@ paths:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
           $ref: '#/components/responses/InvalidCredentials'
+        '422':
+          $ref: '#/components/responses/InvalidInput'
   /auth/logout:
     post:
       tags:
@@ -106,6 +108,8 @@ paths:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '422':
+          $ref: '#/components/responses/InvalidInput'
   /me:
     get:
       tags:
@@ -177,6 +181,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BoardPage'
           description: Boards where the caller is a member. Each item includes myRole.
+        '422':
+          $ref: '#/components/responses/InvalidInput'
     post:
       tags:
         - Boards
@@ -199,6 +205,8 @@ paths:
           description: >-
             Board created with the caller as OWNER and three default columns. ETag is the board
             version.
+        '422':
+          $ref: '#/components/responses/InvalidInput'
   /boards/{boardId}:
     parameters:
       - $ref: '#/components/parameters/boardId'
