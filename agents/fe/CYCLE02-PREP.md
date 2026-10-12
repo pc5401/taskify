@@ -43,3 +43,15 @@ PENDING은position방향/tie/cardcursorbinding/deletedanchor/filterAND/tagcase/
 foreignfilter/repeatedquery/missingboard/warnings관계/machineresponse보완이다.
 부모가조회정책및새임시UI승인질문을제출했으므로승인전제품코드는대기한다.
 이번main병합/push없음; 카드생성/이동은후속이며이번UI버튼도노출하지않는다.
+
+## 승인 및 구현 결과
+
+사용자가 조회정책 전체 및새임시UI후디자인보정을승인했다. 1cc619f 계약커밋을
+제품코드전에병합했고QA5e3e6bd READ001~011을선행읽었다. 상세보드BFF GET
+세경로와읽기kanban/실제내보드Link를구현했다. filterAND/tag exact/foreignvalid
+empty/missing403/positionASC-idASC/board+filtercursor/warningblocked&&done은
+서버계약책임이며FE는응답순서/계산필드를그대로사용한다. UIcolumn/tag필터,
+API및URLassigneeId/limit지원; 미구현memberdirectory나UUID입력제품flow는추가없음.
+mock18/18,typecheck,Nextproductionbuild PASS. 부모web3002SSR상세route200 및
+초기로딩/쓰기control없음/tokenfield없음보조확인. QAactualBFFread검증은진행중이며
+FE추가liveharness는중복하지않는다. browservisual/click및Figma정밀보정은별도.

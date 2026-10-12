@@ -6,7 +6,7 @@
     "start": "next start -p 3002",
     "build": "next build --webpack",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-transform-types --test checks/bff.test.mjs checks/browser-api.test.mjs"
+    "test": "node --experimental-transform-types --test checks/bff.test.mjs checks/browser-api.test.mjs checks/board-read.test.mjs"
   },
   "dependencies": {
     "next": "16.4.0",

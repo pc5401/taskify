@@ -1,6 +1,8 @@
 import { decrypt, encrypt, loginDeadline, opaqueSession, sessionHash } from './crypto.ts';
 import type { Tokens } from './crypto.ts';
 import type { SessionStore } from './store.ts';
+import { readTarget } from './read-target.ts';
+import type { BffPath } from './read-target.ts';
 export type Config = { origin: string; apiBase: string; key: Buffer; production: boolean };
 const COOKIE = 'taskify_session';
 const error = (status: number, code: string | undefined, message: string) => Response.json({ ...(code ? { code } : {}), message, details: {} }, { status, headers: { 'Cache-Control': 'no-store' } });
@@ -31,7 +33,9 @@ export class Bff {
     let value; try { value = await response.json(); } catch { return error(502, undefined, 'Invalid upstream response'); }
     return Response.json(redact(value, secrets), { status: response.status, headers });
   }
-  async handle(request: Request, path: '/auth/login' | '/auth/register' | '/auth/logout' | '/me' | '/boards'): Promise<Response> {
+  async handle(request: Request, path: BffPath): Promise<Response> {
+    const target = readTarget(request, path);
+    if (target instanceof Response) return target;
     if (!['GET','HEAD'].includes(request.method) && request.headers.get('origin') !== this.config.origin) return error(403, 'FORBIDDEN', 'Origin forbidden');
     try {
       const body = ['GET','HEAD'].includes(request.method) ? undefined : await request.text();
@@ -53,7 +57,7 @@ export class Bff {
         let tokens: Tokens;
         try { tokens = decrypt(row.encrypted_tokens, this.config.key, hash); } catch { await tx.revoke(); return this.clear(unauthorized()); }
         let response: Response;
-        const send = () => this.upstream(path + (path === '/boards' && request.method === 'GET' ? new URL(request.url).search : ''), request.method, body, tokens.accessToken, request.headers.get('if-match'));
+        const send = () => this.upstream(target, request.method, body, tokens.accessToken, request.headers.get('if-match'));
         try {
           response = await send();
           if (response.status === 401) {
