@@ -157,3 +157,33 @@ Next dev starts without DB credentials; HTML route smoke is separately recorded
 in FE OUTBOX. Available computer-use browser inventory is empty, so rendered
 visual/interactive browser checks could not run. No DB connection or real
 Nest auth/boards acceptance performed; a preview is not live integration.
+
+## Actual isolated BFF verification (2026-10-12)
+
+Following user approval, checks/live-bff.mjs ran against the isolated
+127.0.0.1:55432/taskify_validation PostgreSQL and actual Nest API3301 with two
+Next production workers3002/3003. Initial29 and restart/logout12 named checks
+passed. This establishes actual HTTP/PG token ciphertext/hash lookup, opaque
+persistent cookie attributes, Origin403, public responses/me/boards/create and
+invalid cursor handling. Fixture-only expired-access injection drove real
+concurrent requests across both workers; the database refresh history increased
+by exactly one and absolute expiry remained unchanged. The access JWT kept the
+approved900-second lifetime; product policy/code was not weakened.
+
+After synchronized BE and both Next-worker restarts with the same keys/DB,
+the preserved cookie restored the original user from each worker. Logout204
+cleared its cookie and persisted local revocation; the old BFF cookie and
+previously valid upstream access both received401. The PostgreSQL server was
+kept running; this is application-process restart persistence verification.
+Harness fixture state is AES-GCM encrypted under ignored .runtime; environment
+secrets are ignored and never printed or committed. No reset/drop/delete of
+existing data; fixtures retained. URL and live DB identity guards require the
+named loopback55432 database before fixtures. Run the opt-in initial/recovery
+phases only against that isolated environment; ordinary npm test remains mock.
+
+Computer-use surfaces remained empty. These results use an explicit HTTP cookie
+jar and inspect production Secure flags over loopback HTTP. They do not claim
+HTTPS browser cookie enforcement, browser shutdown/storage/visual/click checks,
+natural900-second/seven-day elapsed tests, or full AUTH-BFF/HTTP acceptance.
+See agents/fe/LIVE-BFF-RESULT.md for scope and evidence. Services are stopped
+through parent coordination after the full validation batch.
