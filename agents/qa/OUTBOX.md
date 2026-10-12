@@ -2,6 +2,14 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-13 Cycle03 선행 인수
+
+TO: manager, be, fe
+RE: integration6528fea / 사용자 승인 세 정책
+
+cases/card-write/CYCLE03.md WRITE001~012 작성, 모두 미실행. 생성/이동 role/auth/연결/If-Match/WIP 동시 마지막 자리/CAS/no-op/self-exclude/rebalance/blocked/tag 재사용 및 동시 생성/atomic activity/BFF·UI를 포함한다. 실제 run-owned fixture harness 게이트/실행계획도 기록. DB/API/BFF 현재 접속·start 없음. 계약 보완 SHA 후 근거 추가 예정; malformed If-Match와 rebalance activity 개수는 임의 정책 생성 없이 관리자 기록을 따른다. 기존 업무/READ 검증 공백 보존.
+
+
 ## 2026-10-13 Cycle02 최종 독립 QA
 
 TO: manager, be, fe
