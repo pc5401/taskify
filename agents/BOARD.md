@@ -1,5 +1,14 @@
 # 보드
 
+## 2026-10-12 학습 해설 및 main 반영
+
+사용자가 사이클 종료마다 쉬운 설명·그림·표로 과정을 정리하는 하위 에이전트와
+Astra 사용을 요청했다. 해설 역할은 docs/learning 및 agents/explainer에만 쓰고
+제품 코드·정책을 변경하지 않는다. 이번 실행 요청 모델은 gpt-6-astra/high다.
+사용자가 이후 main 병합과 push를 승인했다. 기존 main의 미커밋 QA/Nest 원본은
+Git stash d8cdc75dd6a9d2da0f04d09961b1de011b976aec에 보존했다.
+원격 확인·학습 문서 검토 후 검증된 통합 이력을 main에 fast-forward하고 push한다.
+
 ## 2026-10-12 실제 DB 연결 검증 배치
 
 사용자가 직전 제안(개발 PostgreSQL migration 및 실제 로그인→보드 생성→로그아웃 검증)의
