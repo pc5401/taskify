@@ -1,5 +1,14 @@
 # 보드
 
+## 2026-10-12 HTTP 연결 배치
+
+QA 인수 문장 선작성 후 BE register/login/refresh/logout, GET /me,
+GET/POST /boards 및 AppModule 연결을 구현한다. FE는 기존 Figma 참조를 확인한 뒤
+로그인/가입/내 보드 화면을 BFF에 연결한다. 디자인 링크는 사용자 답변 대기다.
+이메일 입력 원문 비교와 삭제 anchor 이후 cursor 계속 조회는 사용자 승인되었다.
+PATCH /me, 비밀번호 변경, 보드 상세/수정/삭제는 이번 배치에 포함하지 않는다.
+DB 실행/연결, main 병합 및 push는 제외한다. 독립 QA 후 통합 브랜치에 결합한다.
+
 ## 2026-10-11 BFF 기반 배치
 
 사용자가 B안(Next 서버 token 보관, browser HttpOnly session cookie)을 승인했다.
