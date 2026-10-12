@@ -6,9 +6,9 @@ if (process.argv.includes('--check')) { console.log('Harness syntax/preparation 
 const env = process.env;
 assert.equal(env.TASKIFY_QA_LIVE_READY, 'approved-isolated-vs1', 'Wait for parent isolated live readiness');
 const dbUrl = new URL(env.TASKIFY_QA_LIVE_DATABASE_URL);
-const api = new URL(env.TASKIFY_QA_API), web = new URL(env.TASKIFY_QA_BFF);
-for (const url of [dbUrl, api, web]) assert(['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname), 'Loopback only');
-for (const url of [api, web]) assert(!url.username && !url.password && !url.search && !url.hash);
+const api = new URL(env.TASKIFY_QA_API), web = new URL(env.TASKIFY_QA_BFF), secondWeb = new URL(env.TASKIFY_QA_BFF_SECOND || env.TASKIFY_QA_BFF);
+for (const url of [dbUrl, api, web, secondWeb]) assert(['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname), 'Loopback only');
+for (const url of [api, web, secondWeb]) assert(!url.username && !url.password && !url.search && !url.hash);
 assert(env.TASKIFY_QA_EXPECT_DATABASE, 'Explicit isolated database name required');
 const { Pool } = require(env.TASKIFY_QA_PG_MODULE);
 const jwt = require(env.TASKIFY_QA_JWT_MODULE);
@@ -146,7 +146,7 @@ async function main() {
     const input={email,password};
     for (const headers of [{},{Origin:'https://invalid.example'}]) { const rejected=await http(web,'/api/auth/login','POST',input,headers); assert.equal(rejected.status,403); assert.equal(rejected.data.code,'FORBIDDEN'); }
     const login=await http(web,'/api/auth/login','POST',input,{Origin:web.origin}); assert.equal(login.status,200); assert.deepEqual(Object.keys(login.data),['user']);
-    const setCookie=login.headers.get('set-cookie'); assert.match(setCookie,/HttpOnly/);assert.match(setCookie,/SameSite=Lax/);assert.match(setCookie,/Path=\//);assert.match(setCookie,/Max-Age=\d+/);assert.match(setCookie,/Expires=/);
+    const setCookie=login.headers.get('set-cookie'); assert.match(setCookie,/HttpOnly/);assert.match(setCookie,/SameSite=Lax/);assert.match(setCookie,/Path=\//);assert.match(setCookie,/Max-Age=\d+/);assert.match(setCookie,/Expires=/);assert.match(setCookie,/Secure/);
     bffCookie=setCookie.split(';')[0];const opaque=bffCookie.split('=')[1];assert.match(opaque,/^[a-f0-9]{64}$/);bffHash=hash(opaque);
     const row=(await pool.query('SELECT * FROM web_sessions WHERE session_hash=$1',[bffHash])).rows[0];assert(row);const tokens=decode(row.encrypted_tokens,bffHash);assert(!row.encrypted_tokens.includes(tokens.refreshToken));assert(!row.encrypted_tokens.includes(tokens.accessToken));assert.throws(()=>decode(row.encrypted_tokens,'wrong-row'));
     const me=await http(web,'/api/me','GET',undefined,{Cookie:bffCookie});assert.equal(me.status,200);publicUser(me.data);
@@ -156,7 +156,7 @@ async function main() {
     const countBefore=(await pool.query('SELECT count(*)::int AS count FROM refresh_credentials WHERE session_id=$1',[claims.sid])).rows[0].count;
     const iat=Math.floor(Date.now()/1000)-1800;tokens.accessToken=jwt.sign({sub:claims.sub,sid:claims.sid,iat,exp:iat+900},env.TASKIFY_QA_JWT_SECRET,{algorithm:'HS256'});
     await pool.query('UPDATE web_sessions SET encrypted_tokens=$2 WHERE session_hash=$1',[bffHash,encode(tokens,bffHash)]);
-    const responses=await Promise.all(Array.from({length:4},()=>http(web,'/api/me','GET',undefined,{Cookie:bffCookie})));assert(responses.every(v=>v.status===200));
+    const responses=await Promise.all(Array.from({length:4},(_,index)=>http(index%2 ? secondWeb : web,'/api/me','GET',undefined,{Cookie:bffCookie})));assert(responses.every(v=>v.status===200));
     const countAfter=(await pool.query('SELECT count(*)::int AS count FROM refresh_credentials WHERE session_id=$1',[claims.sid])).rows[0].count;assert.equal(countAfter,countBefore+1);
     const current=(await pool.query('SELECT * FROM web_sessions WHERE session_hash=$1',[bffHash])).rows[0];assert.equal(+current.expires_at,+row.expires_at);assert.equal(current.revoked_at,null);
   });

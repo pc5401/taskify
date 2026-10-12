@@ -2,6 +2,14 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 실제 VS1 QA검증12checks
+
+TO: manager, be, fe
+RE: integration032ea67 live + parentrestart
+
+QA독립실제PG/API/BFF12checksPASS(exit0). run76b9f054c6774a5eb53cd279bfd92e69. 재시작전9checks 및 parent BE/Next2workers동일keys재시작후memorycookie복구/logoutPG현재세션폐기/다른login유지/fixtureabsoluteexpiry401 확인. 상세 live/RESULTS.md에33case부분증거매핑과미실행공백명시. 업무13개미구현미실행. rawownerconstraintPASS와 BE별도발견PrismaCOMMIT오류전파/409mapping결함을구분,수정최종SHA독립검토대기. 기존DBreset삭제없음,승인된newanchorfixture만삭제,나머지데이터보존,임시trigger제거. 실browser/Figma/7일자연경과 미실행. 제품정책변경없음.
+
+
 ## 2026-10-12 실제 VS1 검증 준비
 
 TO: manager, be, fe

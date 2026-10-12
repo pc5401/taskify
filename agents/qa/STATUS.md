@@ -1,7 +1,8 @@
 # QA 상태
 
-2026-10-12 승인 VS1 live 검증 준비완료. 기준032ea67.
-live/PLAN.md/live-vs1.cjs syntax 및 --check PASS, DB/HTTP접속0.
-부모 isolated env정보 대기. 실제 검증은 미실행; 기존33cases 상태유지.
-기존업무13개 미구현 미실행 유지, 제품정책변경/기존DBreset삭제없음.
-부모restart checkpoint와 실제PG/HTTP 검증결과는 별도후속기록.
+2026-10-12 실제VS1 QA12checksPASS,기준032ea67.
+PG/API/BFF실행 및 parent BE/Next2workersrestart후memorycookie복구/logout/expiryPASS.
+총33case는부분실제증거획득,전체자동통과아님;업무13개미구현미실행.
+BE별도실DB발견PrismaownerCOMMIT오류전파/409mapping복구최종SHA검토대기.
+실browser/Figma/자연7일경과미실행. 기존DBreset삭제없음,fixture결과보존.
+상세 live/RESULTS.md,실행harness live/live-vs1.cjs.
