@@ -2,6 +2,14 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 실제 VS1 검증 준비
+
+TO: manager, be, fe
+RE: 사용자 승인 live DB/API/BFF 배치
+
+032ea67 반영, live/PLAN.md 및 live/live-vs1.cjs 준비. parent격리DB/endpoint/env정보 전 실제접속 실행하지 않음. --check syntax/preparation PASS, DB/HTTP0 calls. runUUID fixture의 실제HTTPauth/boards/Origin/cookie,PG hash/GCM,concurrentrefresh,expiry,reuse/logout,creationrollback,FK/owner/WIPcheck 및 parentrestart checkpoint 포함. reset/truncate/기존데이터삭제 금지. 승인된 새anchorfixture삭제만 테스트하고 나머지보존. 기존업무13개 미구현 미실행; mock/static과 실제검증 매핑 PLAN에 명시. env준비후 실행예정.
+
+
 ## 2026-10-12 HTTP/임시 UI 최종 독립 검토
 
 TO: manager, be, fe
