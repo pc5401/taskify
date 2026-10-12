@@ -58,3 +58,63 @@ QA 001~013 통과 또는 제품 기능 완료를 주장하지 않는다.
 2. 관리자가 Figma 근거와 다음 FE 범위를 제공한 뒤 Next.js/Tailwind 화면 작업을 시작한다.
 3. 새 계약 변경 시 이 작은 subset과 type checks를 함께 대조한다. 필요 시 자동 타입 생성/런타임 검증을 별도 도입한다.
 4. QA는 계약 형태 및 실제 권한/DB 불변을 독립 검증한다. 미완료인 세션 정책을 프론트가 추정하지 않는다.
+
+## Next BFF foundation (2026-10-12)
+
+No page UI is supplied. Browser routes: POST /api/auth/register, /api/auth/login,
+/api/auth/logout; GET/PATCH /api/me; GET/POST /api/boards. Auth success keeps
+upstream 200/201 and returns only {user}. Other JSON statuses and ETag are
+preserved; token fields and echoes of known session tokens are redacted. No
+browser Authorization is trusted. Local 502 transport/config failures have a
+message/details envelope, without inventing an OpenAPI domain error code.
+
+Node 24.20.0 is installed; Next 16.4.0 requires Node >=20.9. Dependencies are
+pinned in package-lock.json. npm install reported zero vulnerabilities on
+2026-10-12. Official sources: https://nextjs.org/docs/app/getting-started/installation
+and https://nextjs.org/blog (Oct 8 announcement of an Oct 14 upcoming upstream
+security release). Recheck official security releases before deployment; the
+future release is not installed or claimed as available.
+
+Copy .env.example to .env.local and provide NEXT_APP_ORIGIN (exact origin),
+TASKIFY_API_BASE (default example http://localhost:3000/v1), DATABASE_URL and
+TASKIFY_SESSION_KEY (base64 of 32 cryptographically random bytes). Never use
+NEXT_PUBLIC for these secrets. The key has no default; missing/malformed key
+fails closed before an upstream/DB request. Keep the same key across workers
+and restarts; key replacement invalidates existing encrypted bundles.
+Production must use HTTPS for web and upstream traffic. Dev/start use port
+3002 to avoid Nest's 3000. Run npm ci, npm run typecheck, npm test and npm run
+build; npm run dev or npm start only during a separately approved live phase.
+
+Production always uses pg/PostgreSQL, never an in-memory fallback. BE owns the
+migration creating web_sessions(id UUID, session_hash unique, encrypted_tokens
+TEXT, expires_at TIMESTAMPTZ, revoked_at nullable TIMESTAMPTZ, created_at).
+Apply BE migrations in a separately authorized DB phase before live use. No
+migration, DB installation, startup, or connection was performed here. The pg
+Pool is lazy; source/build/unit tests do not connect. Tests inject an explicit
+mock store only. A per-row transaction reads SELECT ... FOR UPDATE before
+using/decrypting tokens, serializing refresh across workers. AES-256-GCM binds
+the ciphertext to session_hash as AAD. Cookie values are 256 random bits, only
+SHA-256 hashes are persisted. HttpOnly, SameSite=Lax, Path=/, production Secure,
+Max-Age/Expires end at the initial absolute deadline. JWT iat from the trusted
+upstream auth response limits initial expiry to seven days; it is not used to
+authenticate a browser JWT. Rotation cannot update expires_at. Mutations require
+the configured Origin, including login/register/logout.
+
+Logout retries with rotated tokens if access expired, then locally revokes
+and clears the cookie. A network/timeout/redirect failure revokes locally and
+returns 502 explaining that upstream revocation was unconfirmed; an already
+held upstream access token may remain valid until backend expiry/revocation.
+A lost refresh response or failed database commit after upstream rotation may
+require login again. No raw errors/tokens are logged. Fetch timeout is 10s and
+redirects are rejected. An upstream success followed by session insert failure
+can leave an upstream session without a browser cookie.
+
+Business HTTP endpoints in Nest remain absent. These routes are foundation
+source only; mock tests/build do not establish actual DB durability, network
+integration, browser restart recovery, or QA AUTH-BFF-001..009 acceptance.
+
+Cross-service refresh is not an atomic PostgreSQL transaction: Nest may commit
+rotation before the BFF save/commit fails. Its rotation cannot be rolled back
+by the web_sessions transaction. The failure requires re-login; retrying an
+old refresh can trigger Nest's session reuse revocation. Mock serialization
+is evidence for local lock discipline only, not real multi-worker PG atomicity.
