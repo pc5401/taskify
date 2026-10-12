@@ -1,11 +1,12 @@
 # BE 상태
 
-턴: 승인 auth/me/boards HTTP 배치 구현 및 DB-free 검증 완료.
-기준: 915f545 / codex/be2-readiness. QA HTTP001~011 선행 문서 읽고 구현.
-범위: register/login/refresh/logout, GET /me, GET/POST /boards, AppModule+ValidationPipe.
-검증: TypeScript build PASS; 7 suites/38 tests PASS (HTTP Nest+Prisma mock 포함).
-이메일 exact 원문, 사용자 응답 비밀 제외, 422 INVALID_INPUT, 0/1024/2048 기본컬럼,
-board/OWNER/columns 트랜잭션, 삭제 anchor 무관 keyset boundary 구현.
-해싱: Node scrypt-v1 N16384/r8/p1, salt16bytes/key64bytes, dummy KDF 및 timingSafeEqual.
-DB 설치/기동/연결 및 의존성 설치 없음. 실제 DB/HTTP/BFF/브라우저 인수 미실행.
-QA 기능 인수 통과 아님. 다음: QA 독립 검토 및 coordinator 통합.
+턴: 승인 격리 PostgreSQL 검증 및 deferred Owner 오류 복구 완료.
+기준: cf2f5ae / codex/be2-readiness.
+격리 DB PostgreSQL18.4 127.0.0.1:55432/taskify_validation, 기존 UUID data 보존.
+기존2 migration 실제 적용 성공. 기존 사용자 DB/시스템 서비스/설치 변경 없음.
+복구: TransactionsService 작업 뒤 특정 boards_require_owner IMMEDIATE 검증,
+명시 검증 P2010/23514 exact LAST_OWNER 오류만409 번역. SQL 정책 변경 없음.
+최종: TypeScript build PASS,7 suites/40 tests PASS,실제 DB regression11/11 PASS.
+산출물: lifecycle/API/real regression scripts, LIVE-DB-REPORT.md 및 README.
+DB는 QA용 유지, API현재 unavailable. reset/drop/delete 없음. 종료는 부모 조율.
+내부 transaction 검증이며 미구현 업무 HTTP/전체 QA 인수 통과가 아님.

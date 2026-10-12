@@ -1,0 +1,10 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const api = path.resolve(__dirname, '..');
+const { configFile } = JSON.parse(fs.readFileSync(path.join(api, '.runtime', 'active-db.json'), 'utf8'));
+const { directory } = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+const env = JSON.parse(fs.readFileSync(path.join(directory, 'runtime-env.json'), 'utf8'));
+for (const [key, value] of Object.entries(env)) process.env[key] = String(value);
+process.env.NODE_PATH = process.env.TASKIFY_API_DEPENDENCIES;
+require('node:module').Module._initPaths();
+require(path.join(api, 'dist', 'main.js'));
