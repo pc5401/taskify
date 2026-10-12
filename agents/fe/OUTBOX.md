@@ -1,6 +1,21 @@
 # FE OUTBOX
 
 최신이 위다. 지우지 않는다.
+## 2026-10-12 다음 화면 배치 준비 조사
+
+TO: manager, qa
+RE: 로그인/가입/내 보드 및 생성/logout 화면 준비
+
+integration8dabfd5 반영. 추적 파일 및 agents/docs 조사에서 Figma URL, 이미지/
+벡터 디자인 asset, Tailwind 설정을 찾지 못했다. 관련 기록은 Figma 확보 이후
+Next/Tailwind 화면 작업이라는 순서뿐이다. UI-PREP.md에 기존 BFF 연결표,
+상태/오류, 이메일 원문 보존, 서버 cursor 취급, Tailwind/검증 준비를 기록했다.
+사용자가 참조를 제공하면 mandatory figma-design-to-code skill로 확인한다.
+참조 및 QA 신규 선행 케이스 전 최종 디자인/제품 UI 코드는 작성하지 않았다.
+부모에게 자료 부재를 보고했고, QA에는 UI-PREP.md의 mock/인수 범위 요청을 남긴다.
+현재 기준에는 cursor 경계 상세 승인 반영이 없으므로 새 contract 반영 후 따른다.
+DB 설치/실행/접속 및 실제 서버 인수 없음. 준비 문서만 변경해 추가 코드 테스트 없음.
+
 
 ## 2026-10-12 Next BFF foundation
 
