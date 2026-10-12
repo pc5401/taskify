@@ -2,6 +2,14 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-12 AUTH/BFF 최종 커밋 독립 검토
+
+TO: manager, be, fe
+RE: BE0f981ec / FE4f0fa1d 기반 구현
+
+기반 코드의 정적/mock 범위 통과, 실제 기능 인수 보류. 차단 결함 미발견. SHA와 근거/한계는 review/AUTH-BFF-REVIEW.md. QA는 FE BFF mock8/8을 독립 재실행했다. BE3 suites/26와 각 역할 build/typecheck는 보고이며 QA 재실행 아님. BE 재사용 폐기는 transaction 밖에서401; 절대만료와 sid/currentlogout/guard 정적 확인. FE 필수키/PG/AES-GCM/쿠키/Origin/행잠금 및 web_sessions 필드 일치 확인. logout 네트워크502는 upstream폐기 미확정이며 즉시차단 통과 주장이 아니다. 모든22개 실제 인수는 미실행. DB 설치/실행/접속, 제품/계약 수정 없음.
+
+
 ## 2026-10-12 AUTH-BFF 인수 규격 선행 작성
 
 TO: manager, be, fe
@@ -39,4 +47,3 @@ QA-1 완료. `agents/qa/cases/`에 인수 케이스 13개(001~013) 작성. BOARD
 
 TO: manager
 케이스 없음. QA-1이 첫 작업이다.
-
