@@ -204,3 +204,15 @@ failed because QA expected private creatorId in the public response and used an
 oversized tag; corrected harness passed without product changes. No browser-click
 or unsupported card editing/deletion/dependency HTTP claim. New isolated fixtures
 are retained; final runtime shutdown is parent-coordinated. See CYCLE03-RESULT.md.
+
+## Cycle04 member reads
+
+GET /v1/boards/:boardId/members reuses BoardReadsService and SessionGuard.
+All member roles can read; missing/nonmember/PENDING403 NOT_MEMBER, invalidUUID422,
+invalid session401. Returns the full existing-contract collection without pagination.
+Query selects only userId/role/joinedAt and user.nickname; response projects exactly
+those four public Member fields. No email/hash/token/session/private relations.
+Ordering joinedAt ASC/userId ASC is a deterministic implementation choice.
+No schema/migration or new assignment-write behavior; existing create assigneeId
+and card filtering remain reusable. Build/mock HTTP tests pass (10 suites65 tests).
+Actual API/BFF/browser acceptance and server startup/shutdown are parent-coordinated.

@@ -61,6 +61,15 @@ export class BoardReadsService {
     if (!board) fail(403, 'NOT_MEMBER');
     return board;
   }
+  async members(rawBoardId: unknown, userId: string) {
+    const boardId = readUuid(rawBoardId);
+    await this.membership(boardId, userId);
+    const rows = await this.prisma.boardMember.findMany({
+      where: { boardId }, orderBy: [{ joinedAt: 'asc' }, { userId: 'asc' }],
+      select: { userId: true, role: true, joinedAt: true, user: { select: { nickname: true } } },
+    });
+    return { items: rows.map(row => ({ userId: row.userId, nickname: row.user.nickname, role: row.role, joinedAt: row.joinedAt })) };
+  }
   async columns(rawBoardId: unknown, userId: string) {
     const boardId = readUuid(rawBoardId);
     await this.membership(boardId, userId);
