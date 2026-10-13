@@ -1,6 +1,6 @@
 # Cycle04 멤버 조회·담당자 선행 인수
 
-기준 계약83ab6c / 통합27d5c50 (선행60617aa), 기존 OpenAPI Member/카드 생성의 assigneeId, 부모가 전달한 사용자 승인 Cycle04 범위. 멤버 GET401/403/422 선언 반영. joinedAt ASC/userId ASC는 BE의 deterministic 기술 정렬로 검증한다. 아래 모두 미실행. 브라우저 조작·시각/Figma 확인은 부모 담당, QA는 HTTP·fixture·정적/mock 증거만 독립 기록한다.
+기준 계약83ab6c / 통합27d5c50 (선행60617aa), 기존 OpenAPI Member/카드 생성의 assigneeId, 부모가 전달한 사용자 승인 Cycle04 범위. 멤버 GET401/403/422 선언 반영. joinedAt ASC/userId ASC는 BE의 deterministic 기술 정렬로 검증한다. 선행 작성 당시 아래 모두 미실행. 최신 결과는 마지막 절과 별도 RESULTS 참조. 브라우저 조작·시각/Figma 확인은 부모 담당, QA는 HTTP·fixture·정적/mock 증거만 독립 기록한다.
 
 | 사례 | 인수 문장·요청 | 기대 | 불변 |
 |---|---|---|---|
@@ -20,3 +20,7 @@
 부모 DB ready 전 연결/start 금지. gate+loopback55432/taskify_validation 확인 후 새 run owner/editor/viewer와 외부/PENDING 경계용 사용자만 SQL seed한다. 사용자 데이터가 없는 새 보드, 기본 active2/done1 컬럼, 미완료 선행, 원문 태그, 카드7개와 담당자3샘플(Owner/Editor/Viewer), 미지정 카드를 만든다. SQL fixture는 제품 생성 성공 증거와 별도다.
 
 부모 로그인용 dummy example.test 계정 및 고정 nonproduction test password는 agents/qa/live/.runtime의 ignored JSON에만 저장한다. 문서·Git·tool 로그에 credential 원문을 쓰지 않는다. 부모에게 파일 경로만 전달한다. 기존 사용자 데이터 reset/삭제 없음, 새 fixture 보존. QA는 브라우저 조작하지 않으며 부모가 실행한 클릭/시각 결과는 역할 증거로 구분한다.
+
+## 2026-10-13 최종 실행 기록
+
+독립 actual11 PASS, 실제Nest+mock persistence HTTP4 PASS, 최종FEmock23 PASS. MEMBER/ASSIGNEE/UI8의 부분 증거는 live/CYCLE04-RESULTS.md에 매핑. UI 부모 실제browser 보고 근거와독립QA HTTP를 구분하며 모든미실행공백을자동통과시키지 않는다. 최종BE7efe168/FE제품ceaa97b·문서인계e1622a4 확인. 부모serverstop/data보존.
