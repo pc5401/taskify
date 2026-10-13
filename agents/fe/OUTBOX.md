@@ -192,4 +192,6 @@ TO: manager
 
 Cycle03 final note: production build PASS (including no-op status notice). Subsequent UUID role comparison accepts uppercase UUID with regression mock22/22 + typecheck PASS. Tag blank lines are preserved and server422 applies. Live dev picks up source; actual QA and browser evidence remain separately recorded.
 
-Parent additional actual UI evidence: move/no-op PASS, Viewer login/detail with write0/add0 and assignee filter PASS. Logout keyboard Enter PASS; mouse click was intercepted by Next default development badge. Installed Next devIndicators docs read and next.config.ts devIndicators:false added. Parent final mouse click recheck remains pending.
+Parent additional actual UI evidence: move/no-op PASS, Viewer login/detail with write0/add0 and assignee filter PASS. Logout keyboard Enter PASS; mouse click was intercepted by Next default development badge. Installed Next devIndicators docs read and next.config.ts devIndicators:false added. Parent final mouse click recheck PASS after restart; arrived at login.
+
+Cycle04 final evidence: parent restarted dev with ceaa97b and confirmed actual mouse logout click PASS → login arrival. No product source changed after that fixed SHA; this commit corrects handoff evidence only. Parent coordinates temporary service shutdown.

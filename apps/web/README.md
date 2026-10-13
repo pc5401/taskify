@@ -276,4 +276,4 @@ typecheck and production-build evidence is distinct from browser acceptance.
 
 Parent actual browser evidence: owner login, board link, editor-assigned create, editor filter PASS;1440x900 source comparison and390x844 mobile width/dialog scroll/close PASS. This is recorded separately from mock23/typecheck/build.
 
-Development indicators are disabled because the default bottom-left badge overlapped logout during actual mouse-click testing. Compile/runtime error reporting remains enabled. Parent move/no-op and Viewer read/write-hidden/filter tests passed; logout mouse recheck follows rebuild.
+Development indicators are disabled because the default bottom-left badge overlapped logout during actual mouse-click testing. Compile/runtime error reporting remains enabled. Parent move/no-op and Viewer read/write-hidden/filter tests passed; logout mouse recheck after rebuild/restart PASS; arrived at login.
