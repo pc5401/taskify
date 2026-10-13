@@ -1,0 +1,166 @@
+export default function Component03() {
+  return (
+    <div className="bg-[#f6f8fc] overflow-clip relative rounded-[12px] size-full" data-node-id="6:69" data-name="03 / 보드 상세">
+      <div className="absolute bg-[#18223a] h-[900px] left-0 overflow-clip top-0 w-[230px]" data-node-id="6:70" data-name="Sidebar">
+        <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[26px] not-italic text-[25px] text-white top-[29px] w-[180px] whitespace-pre-wrap" data-node-id="6:71">{`◆  taskify`}</p>
+        <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[27px] not-italic text-[#a3afca] text-[11px] top-[106px] w-[180px]" data-node-id="6:72">
+          WORKSPACE
+        </p>
+        <div className="absolute bg-[#293453] h-[42px] left-[14px] rounded-[8px] top-[147px] w-[200px]" data-node-id="6:73" data-name="Active nav" />
+        <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[29px] not-italic text-[14px] text-white top-[154px] w-[175px] whitespace-pre-wrap" data-node-id="6:74">{`▦  내 보드`}</p>
+        <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[29px] not-italic text-[#abb9d3] text-[14px] top-[211px] w-[175px] whitespace-pre-wrap" data-node-id="6:75">{`✉  받은 초대함`}</p>
+        <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[29px] not-italic text-[#abb9d3] text-[14px] top-[268px] w-[175px] whitespace-pre-wrap" data-node-id="6:76">{`⌕  검색`}</p>
+        <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[29px] not-italic text-[#abb9d3] text-[14px] top-[325px] w-[175px] whitespace-pre-wrap" data-node-id="6:77">{`◉  마이페이지`}</p>
+        <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[27px] not-italic text-[14px] text-white top-[845px] w-[174px] whitespace-pre-wrap" data-node-id="6:78">{`◉  최명권`}</p>
+      </div>
+      <div className="absolute bg-white h-[72px] left-[230px] top-0 w-[1210px]" data-node-id="6:79" data-name="Topbar" />
+      <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[271px] not-italic text-[#243047] text-[14px] top-[25px] w-[580px]" data-node-id="6:80">
+        Workspace / 서비스 리뉴얼
+      </p>
+      <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[1147px] not-italic text-[#69768c] text-[15px] top-[25px] w-[270px] whitespace-pre-wrap" data-node-id="6:81">{`⌕            ♧          CM`}</p>
+      <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[276px] not-italic text-[#243047] text-[27px] top-[110px] w-[800px]" data-node-id="6:82">
+        서비스 리뉴얼
+      </p>
+      <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[277px] not-italic text-[#69768c] text-[13px] top-[151px] w-[910px]" data-node-id="6:83">
+        컬럼과 카드로 팀의 작업 진행 상황을 관리합니다.
+      </p>
+      <div className="absolute bg-[#6958e8] h-[39px] left-[1215px] overflow-clip rounded-[8px] top-[117px] w-[147px]" data-node-id="6:84" data-name="Button / 멤버 초대">
+        <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[14px] not-italic text-[13px] text-white top-[10px] w-[129px]" data-node-id="6:85">
+          멤버 초대
+        </p>
+      </div>
+      <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[276px] not-italic text-[#69768c] text-[13px] top-[203px] w-[700px] whitespace-pre-wrap" data-node-id="6:86">{`전체 카드  ⌄        담당자  ⌄         태그  ⌄`}</p>
+      <div className="absolute bg-[#eef1f7] h-[580px] left-[276px] overflow-clip rounded-[12px] top-[238px] w-[316px]" data-node-id="6:87" data-name="Column / 할 일">
+        <div className="absolute bg-[#69768c] h-[20px] left-[17px] rounded-[4px] top-[17px] w-[7px]" data-node-id="6:88" data-name="Accent" />
+        <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[33px] not-italic text-[#243047] text-[16px] top-[17px] w-[200px]" data-node-id="6:89">
+          할 일
+        </p>
+        <div className="absolute bg-[#e0e5ee] h-[26px] left-[260px] overflow-clip rounded-[13px] top-[14px] w-[38px]" data-node-id="6:90" data-name="Badge / 3">
+          <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[11px] not-italic text-[#69768c] text-[11px] top-[5px] w-[23px]" data-node-id="6:91">
+            3
+          </p>
+        </div>
+        <div className="absolute bg-white border border-[#e2e7f0] border-solid h-[130px] left-[12px] overflow-clip rounded-[10px] top-[58px] w-[288px]" data-node-id="6:92" data-name="Task card / 회원가입 화면 개선">
+          <div className="absolute bg-[#f0edff] h-[26px] left-[13px] overflow-clip rounded-[13px] top-[12px] w-[76px]" data-node-id="6:93" data-name="Badge / 디자인">
+            <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[11px] not-italic text-[#6958e8] text-[11px] top-[5px] w-[61px]" data-node-id="6:94">
+              디자인
+            </p>
+          </div>
+          <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[13px] not-italic text-[#243047] text-[14px] top-[50px] w-[260px]" data-node-id="6:95">
+            회원가입 화면 개선
+          </p>
+          <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[13px] not-italic text-[#69768c] text-[11px] top-[101px] w-[262px] whitespace-pre-wrap" data-node-id="6:96">{`◷ 10월 16일   ◉ 지민`}</p>
+        </div>
+        <div className="absolute bg-white border border-[#e2e7f0] border-solid h-[130px] left-[12px] overflow-clip rounded-[10px] top-[203px] w-[288px]" data-node-id="6:97" data-name="Task card / 보드 검색 UI">
+          <div className="absolute bg-[#f0edff] h-[26px] left-[13px] overflow-clip rounded-[13px] top-[12px] w-[64px]" data-node-id="6:98" data-name="Badge / 개발">
+            <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[11px] not-italic text-[#6958e8] text-[11px] top-[5px] w-[49px]" data-node-id="6:99">
+              개발
+            </p>
+          </div>
+          <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[13px] not-italic text-[#243047] text-[14px] top-[50px] w-[260px]" data-node-id="6:100">
+            보드 검색 UI
+          </p>
+          <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[13px] not-italic text-[#69768c] text-[11px] top-[101px] w-[262px] whitespace-pre-wrap" data-node-id="6:101">{`◷ 10월 17일   ◉ 명권`}</p>
+        </div>
+        <div className="absolute bg-white border border-[#e2e7f0] border-solid h-[130px] left-[12px] overflow-clip rounded-[10px] top-[348px] w-[288px]" data-node-id="6:102" data-name="Task card / 접근 권한 정책 점검">
+          <div className="absolute bg-[#f0edff] h-[26px] left-[13px] overflow-clip rounded-[13px] top-[12px] w-[76px]" data-node-id="6:103" data-name="Badge / QA">
+            <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[11px] not-italic text-[#6958e8] text-[11px] top-[5px] w-[61px]" data-node-id="6:104">
+              QA
+            </p>
+          </div>
+          <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[13px] not-italic text-[#243047] text-[14px] top-[50px] w-[260px]" data-node-id="6:105">
+            접근 권한 정책 점검
+          </p>
+          <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[13px] not-italic text-[#69768c] text-[11px] top-[101px] w-[262px] whitespace-pre-wrap" data-node-id="6:106">{`◷ 10월 20일   ◉ 하린`}</p>
+        </div>
+        <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[17px] not-italic text-[#69768c] text-[13px] top-[540px] w-[260px]" data-node-id="6:107">
+          + 카드 추가
+        </p>
+      </div>
+      <div className="absolute bg-[#eef1f7] h-[580px] left-[606px] overflow-clip rounded-[12px] top-[238px] w-[316px]" data-node-id="6:108" data-name="Column / 하는 중">
+        <div className="absolute bg-[#6958e8] h-[20px] left-[17px] rounded-[4px] top-[17px] w-[7px]" data-node-id="6:109" data-name="Accent" />
+        <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[33px] not-italic text-[#243047] text-[16px] top-[17px] w-[200px]" data-node-id="6:110">
+          하는 중
+        </p>
+        <div className="absolute bg-[#e0e5ee] h-[26px] left-[260px] overflow-clip rounded-[13px] top-[14px] w-[38px]" data-node-id="6:111" data-name="Badge / 2">
+          <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[11px] not-italic text-[#69768c] text-[11px] top-[5px] w-[23px]" data-node-id="6:112">
+            2
+          </p>
+        </div>
+        <div className="absolute bg-white border border-[#e2e7f0] border-solid h-[130px] left-[12px] overflow-clip rounded-[10px] top-[58px] w-[288px]" data-node-id="6:113" data-name="Task card / 카드 의존 관계 표시">
+          <div className="absolute bg-[#f0edff] h-[26px] left-[13px] overflow-clip rounded-[13px] top-[12px] w-[64px]" data-node-id="6:114" data-name="Badge / 개발">
+            <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[11px] not-italic text-[#6958e8] text-[11px] top-[5px] w-[49px]" data-node-id="6:115">
+              개발
+            </p>
+          </div>
+          <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[13px] not-italic text-[#243047] text-[14px] top-[50px] w-[260px]" data-node-id="6:116">
+            카드 의존 관계 표시
+          </p>
+          <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[13px] not-italic text-[#b97723] text-[11px] top-[101px] w-[262px] whitespace-pre-wrap" data-node-id="6:117">{`⚠ 선행 작업 대기   ◷ 10월 12일   ◉ 명권`}</p>
+        </div>
+        <div className="absolute bg-white border border-[#e2e7f0] border-solid h-[130px] left-[12px] overflow-clip rounded-[10px] top-[203px] w-[288px]" data-node-id="6:118" data-name="Task card / 초대 상태 메시지">
+          <div className="absolute bg-[#f0edff] h-[26px] left-[13px] overflow-clip rounded-[13px] top-[12px] w-[76px]" data-node-id="6:119" data-name="Badge / 디자인">
+            <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[11px] not-italic text-[#6958e8] text-[11px] top-[5px] w-[61px]" data-node-id="6:120">
+              디자인
+            </p>
+          </div>
+          <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[13px] not-italic text-[#243047] text-[14px] top-[50px] w-[260px]" data-node-id="6:121">
+            초대 상태 메시지
+          </p>
+          <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[13px] not-italic text-[#69768c] text-[11px] top-[101px] w-[262px] whitespace-pre-wrap" data-node-id="6:122">{`◷ 10월 14일   ◉ 지민`}</p>
+        </div>
+        <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[17px] not-italic text-[#69768c] text-[13px] top-[540px] w-[260px]" data-node-id="6:123">
+          + 카드 추가
+        </p>
+      </div>
+      <div className="absolute bg-[#eef1f7] h-[580px] left-[936px] overflow-clip rounded-[12px] top-[238px] w-[316px]" data-node-id="6:124" data-name="Column / 완료">
+        <div className="absolute bg-[#12836d] h-[20px] left-[17px] rounded-[4px] top-[17px] w-[7px]" data-node-id="6:125" data-name="Accent" />
+        <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[33px] not-italic text-[#243047] text-[16px] top-[17px] w-[200px]" data-node-id="6:126">
+          완료
+        </p>
+        <div className="absolute bg-[#e0e5ee] h-[26px] left-[260px] overflow-clip rounded-[13px] top-[14px] w-[38px]" data-node-id="6:127" data-name="Badge / 2">
+          <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[11px] not-italic text-[#69768c] text-[11px] top-[5px] w-[23px]" data-node-id="6:128">
+            2
+          </p>
+        </div>
+        <div className="absolute bg-white border border-[#e2e7f0] border-solid h-[130px] left-[12px] overflow-clip rounded-[10px] top-[58px] w-[288px]" data-node-id="6:129" data-name="Task card / 보드 생성 기능">
+          <div className="absolute bg-[#f0edff] h-[26px] left-[13px] overflow-clip rounded-[13px] top-[12px] w-[64px]" data-node-id="6:130" data-name="Badge / 개발">
+            <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[11px] not-italic text-[#6958e8] text-[11px] top-[5px] w-[49px]" data-node-id="6:131">
+              개발
+            </p>
+          </div>
+          <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[13px] not-italic text-[#243047] text-[14px] top-[50px] w-[260px]" data-node-id="6:132">
+            보드 생성 기능
+          </p>
+          <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[13px] not-italic text-[#69768c] text-[11px] top-[101px] w-[262px] whitespace-pre-wrap" data-node-id="6:133">{`◷ 10월 8일   ◉ 하린`}</p>
+        </div>
+        <div className="absolute bg-white border border-[#e2e7f0] border-solid h-[130px] left-[12px] overflow-clip rounded-[10px] top-[203px] w-[288px]" data-node-id="6:134" data-name="Task card / 기본 컬럼 세팅">
+          <div className="absolute bg-[#f0edff] h-[26px] left-[13px] overflow-clip rounded-[13px] top-[12px] w-[76px]" data-node-id="6:135" data-name="Badge / QA">
+            <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[11px] not-italic text-[#6958e8] text-[11px] top-[5px] w-[61px]" data-node-id="6:136">
+              QA
+            </p>
+          </div>
+          <p className="[word-break:break-word] absolute font-['Inter:Semi_Bold'] font-semibold leading-[normal] left-[13px] not-italic text-[#243047] text-[14px] top-[50px] w-[260px]" data-node-id="6:137">
+            기본 컬럼 세팅
+          </p>
+          <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[13px] not-italic text-[#69768c] text-[11px] top-[101px] w-[262px] whitespace-pre-wrap" data-node-id="6:138">{`◷ 10월 8일   ◉ 명권`}</p>
+        </div>
+        <p className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[17px] not-italic text-[#69768c] text-[13px] top-[540px] w-[260px]" data-node-id="6:139">
+          + 카드 추가
+        </p>
+      </div>
+    </div>
+  );
+}
+
+SUPER CRITICAL: The generated React+Tailwind code MUST be converted to match the target project's technology stack and styling system.
+1. Analyze the target codebase to identify: technology stack, styling approach, component patterns, and design tokens
+2. Convert React syntax to the target framework/library
+3. Transform all Tailwind classes to the target styling system while preserving exact visual design
+4. Follow the project's existing patterns and conventions
+DO NOT install any Tailwind as a dependency unless the user instructs you to do so.
+
+
+Node ids have been added to the code as data attributes, e.g. `data-node-id="1:2"`.
+
+Images and SVGs will be stored as constants, e.g. const image = `${assetPathPrefix}/<asset file name>`, where assetPathPrefix is declared once at the top of the code and every asset URL interpolates it. These constants will be used in the code as the source for the image, ex: <img src={image} />. Image assets are stored on a remote server for 7 days and can be fetched using the provided URLs until they expire.

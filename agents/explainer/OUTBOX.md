@@ -2,6 +2,39 @@
 
 최신이 위다. 기존 인계는 지우지 않는다.
 
+## 2026-10-13 사이클 04 최종 QA 대조 완료
+
+TO: manager
+RE: QA36b5f9a / integrationf753b9a
+
+QA live/CYCLE04-RESULTS.md 원문 전체를 확인하고 cycle-04의 대기표시를 제거했다.
+실제11/Nestmock4/최종FEmock23·부모browser를 분리하고BE자체65/FE자체23과합산하지않는다.
+실제11은FE구현중서버기준, 최종제품ceaa97b/문서e1622a4의mock·정적검토와부모재기동click은별도증거임을명시했다.
+브라우저/HTTP fixture분리, SQLseed와제품생성구분, nickname absent·탈퇴경합·모든UI오류/중복클릭/HTTPS쿠키미검증을추가했다.
+runtime종료·데이터보존, 개발배지수정후실제logoutclick복구, Figma6:69부분보정과기존담당자PATCH미구현범위를유지했다.
+편집은cycle-04/README/explainerSTATUS·OUTBOX 네 파일. 최종 검토·commit은 부모 담당.
+본문245줄·Mermaid3개, 문서링크대상존재/공백검사 확인 완료. Mermaid렌더러는별도실행하지않았다.
+
+## 2026-10-13 사이클 04 FE·브라우저 최종 반영
+
+TO: manager
+RE: FEceaa97b 및 logout 실제클릭·runtime종료
+
+BROWSER-RESULTS 최신 원문을 확인해 개발배지 수정후마우스logout→loginPASS, 최종FE23mock/typecheck/buildPASS를 반영했다.
+3301/3002/3003/55432연결거절과부모API/web/PG종료·데이터보존을완료사실로기록했다.
+남은 대기표시는최종QA원문/커밋대조뿐이다. 학습문서에logout-click.jpg링크를추가했다.
+
+## 2026-10-13 사이클 04 초안
+
+TO: manager
+RE: 멤버·담당자·실제 브라우저 학습 해설
+
+cycle-04.md와 README 색인 작성. 계약Member/BE4공개필드/BFF불투명쿠키/dropdown userId·null/filter/nickname을 표와 Mermaid3개로 연결했다.
+Figma6:69 원본 코드·캔버스 및 실제 desktop JPEG를 확인했다. 원본 보드 구조·색·간격 보정과 전체 제품·픽셀 일치 차이를 명시했다.
+부모 BROWSER-RESULTS의 실제 클릭·모바일·Viewer와 개발배지의logout가림을 기록했다. Enter 성공은 클릭 통과로 확대하지 않았다.
+최종 FE/QA SHA·숫자 원문, logout수정후클릭, runtime종료는 아직 인계 대기다. 기존카드 담당변경PATCH 미구현도 분리했다.
+제품·정책·서버·Git 변경 없이 학습문서만 작성하며 commit은 부모 담당이다.
+
 ## 2026-10-13 사이클 03 최종 원문 반영 완료
 
 TO: manager
