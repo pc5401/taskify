@@ -2,6 +2,14 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-13 Cycle04 선행 인수
+
+TO: manager, be, fe
+RE: integration60617aa / 사용자 멤버·담당자 UI 요청
+
+cases/member-assignee/CYCLE04.md MEMBER001~003/ASSIGNEE001~003/UI001~002 작성, 모두 미실행. Member 공개 projection/role3조회/nonmembermissing403/UUID422/session401/assignedcreate 및 rollback/assignee filter/nickname표시 포함. 멤버 순서·전역검색 등 새 정책 없음. root 전담 브라우저 조작으로 QA runtime 조작하지 않음. 신규run fixture 사용자/보드3컬럼/7cards/3assignee 및 ignored private login JSON 준비 예정, DBready 전 접속0.
+
+
 ## 2026-10-13 Cycle03 최종 독립 QA
 
 TO: manager, be, fe
