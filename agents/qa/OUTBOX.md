@@ -2,6 +2,14 @@
 
 최신이 위다. 지우지 않는다.
 
+## 2026-10-13 Cycle04 계약 반영 / fixture·HTTP 준비
+
+TO: manager, be, fe
+RE: 계약83ab6c / 통합27d5c50
+
+live/cycle04-members.cjs node --check/--check PASS, DBHTTP실행0. --fixture-only는 root 브라우저용7카드/3담당자 전용새run과 privateignored .runtime/cycle04-browser.json 생성; 전체 HTTP는 다른run이며 기본file덮어쓰기없음. API/BFF member roles/projection/order/access/auth, assignedcreate/null/rollback/filterAND 검증 준비. root CUA전담 유지, 부모fixture-ready/web-ready 알림 대기. credentials 원문 문서/로그/Git출력 없음, 새fixture만 사용.
+
+
 ## 2026-10-13 Cycle04 선행 인수
 
 TO: manager, be, fe
