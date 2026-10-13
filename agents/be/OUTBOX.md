@@ -1,3 +1,12 @@
+## 2026-10-13 Cycle04 members 준비
+
+TO: manager, qa, fe
+RE: 계약83ab6c/QA79e0c09
+members GET 기존 read/service/guard 재사용. 전 회원role 허용,403/422/401경계.
+정확4 public필드 projection 및 nick-only DBselect, joinedAt/userId ASC 기술정렬.
+전체목록/pagination없음, schema/migration없음, assignee기존생성API재사용.
+build 및10 suites65 tests PASS(mock HTTP 포함). 실제QA/브라우저는 아직대기.
+서버기동/종료 부모조율; API 최신dist 준비됨.
 ## 2026-10-13 cycle03 최종 검증
 
 TO: manager, qa, fe

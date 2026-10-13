@@ -22,6 +22,9 @@ export class BoardsController {
     response.setHeader('ETag', etag(board.version));
     return board;
   }
+  @Get(':boardId/members') members(@Param('boardId') boardId: string, @Req() request: any) {
+    return this.reads.members(boardId, request.auth.userId);
+  }
   @Get(':boardId/columns') columns(@Param('boardId') boardId: string, @Req() request: any) {
     return this.reads.columns(boardId, request.auth.userId);
   }

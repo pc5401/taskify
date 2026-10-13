@@ -13,7 +13,7 @@ describe('board read HTTP routes (mock DB/session; real Nest guard and query par
   const board = { id: boardId, title: 'Private board', description: null, color: '#5534DA', version: 3, createdAt: new Date(), updatedAt: new Date() };
   beforeAll(async () => {
     process.env.AUTH_JWT_SECRET = 'test-only-secret-for-board-reads-32-bytes';
-    db = { $disconnect: jest.fn(), boardMember: { findUnique: jest.fn(async ({ where }) => where.boardId_userId.boardId === boardId ? { role: 'VIEWER' } : null) },
+    db = { $disconnect: jest.fn(), boardMember: { findMany: jest.fn(async () => [{ userId: id, role: 'EDITOR', joinedAt: new Date('2026-10-13T00:00:00Z'), user: { nickname: 'Member', email: 'private', passwordHash: 'private', sessions: ['private'] } }]), findUnique: jest.fn(async ({ where }) => where.boardId_userId.boardId === boardId ? { role: 'VIEWER' } : null) },
       board: { findUnique: jest.fn(async () => board) }, column: { findMany: jest.fn(async () => []) }, card: { findMany: jest.fn(async () => []) } };
     const sessions = { authenticate: jest.fn(async token => {
       if (!['OWNER', 'EDITOR', 'VIEWER'].includes(token)) fail(401, 'UNAUTHENTICATED');
@@ -31,8 +31,15 @@ describe('board read HTTP routes (mock DB/session; real Nest guard and query par
       await request(app.getHttpServer()).get(`/v1/boards/${boardId}/cards`).set('Authorization', `Bearer ${role}`).expect(200).expect({ items: [], nextCursor: null });
     }
   });
+  it('all roles read only public member fields in deterministic order', async () => {
+    for (const role of ['OWNER', 'EDITOR', 'VIEWER']) {
+      const members = await request(app.getHttpServer()).get(`/v1/boards/${boardId}/members`).set('Authorization', `Bearer ${role}`).expect(200);
+      expect(members.body).toEqual({ items: [{ userId: id, nickname: 'Member', role: 'EDITOR', joinedAt: '2026-10-13T00:00:00.000Z' }] });
+      expect(db.boardMember.findMany).toHaveBeenLastCalledWith({ where: { boardId }, orderBy: [{ joinedAt: 'asc' }, { userId: 'asc' }], select: { userId: true, role: true, joinedAt: true, user: { select: { nickname: true } } } });
+    }
+  });
   it('enforces session and missing/nonmember boundary on each route', async () => {
-    for (const suffix of ['', '/columns', '/cards']) {
+    for (const suffix of ['', '/columns', '/cards', '/members']) {
       await request(app.getHttpServer()).get(`/v1/boards/${boardId}${suffix}`).expect(401);
       await request(app.getHttpServer()).get(`/v1/boards/${boardId}${suffix}`).set('Authorization', 'Bearer revoked').expect(401);
       const response = await request(app.getHttpServer()).get(`/v1/boards/${id}${suffix}`).set('Authorization', 'Bearer VIEWER').expect(403);
@@ -41,7 +48,7 @@ describe('board read HTTP routes (mock DB/session; real Nest guard and query par
     }
   });
   it('rejects malformed board/query inputs with 422 envelope and leaves read state unchanged', async () => {
-    for (const suffix of ['', '/columns', '/cards']) {
+    for (const suffix of ['', '/columns', '/cards', '/members']) {
       await request(app.getHttpServer()).get(`/v1/boards/bad${suffix}`).set('Authorization', 'Bearer VIEWER').expect(422);
     }
     for (const query of ['limit=1&limit=2', 'tag=a&tag=b', 'columnId=bad', 'assigneeId=bad', 'cursor=broken']) {
