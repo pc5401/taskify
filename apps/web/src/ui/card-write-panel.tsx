@@ -2,10 +2,10 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { BrowserApiError, createBrowserApi } from '../browser-api';
-import type { Card, Column } from '../contract';
+import type { Card, Column, Member } from '../contract';
 import { buttonClass, ErrorMessage, inputClass } from './shared';
 const api = createBrowserApi();
-export function CardWritePanel({ columns, cards, refresh, unauthenticated, forbidden }: { columns: Column[]; cards: Card[]; refresh: (message?: string) => void; unauthenticated: () => void; forbidden: () => void }) {
+export function CardWritePanel({ columns, cards, members, initialColumn, refresh, unauthenticated, forbidden }: { columns: Column[]; cards: Card[]; members: Member[]; initialColumn?: string; refresh: (message?: string) => void; unauthenticated: () => void; forbidden: () => void }) {
   const pending = useRef<AbortController | null>(null);
   const [busy, setBusy] = useState(false), [error, setError] = useState<string | null>(null);
   const [moving, setMoving] = useState(''), [destination, setDestination] = useState(columns[0]?.id ?? '');
@@ -18,7 +18,7 @@ export function CardWritePanel({ columns, cards, refresh, unauthenticated, forbi
       let notice: string | undefined;
       if (kind === 'create') {
         const due = String(values.get('dueAt') ?? ''), description = String(values.get('description') ?? ''), predecessor = String(values.get('predecessorId') ?? ''), tags = String(values.get('tagNames') ?? '');
-        await api.createCard(String(values.get('columnId')), { title: String(values.get('title') ?? ''), ...(description ? { description } : {}), ...(due ? { dueAt: new Date(due).toISOString() } : {}), ...(predecessor ? { predecessorId: predecessor } : {}), ...(tags ? { tagNames: tags.split('\n') } : {}) }, controller.signal);
+        await api.createCard(String(values.get('columnId')), { title: String(values.get('title') ?? ''), assigneeId: String(values.get('assigneeId') ?? '') || null, ...(description ? { description } : {}), ...(due ? { dueAt: new Date(due).toISOString() } : {}), ...(predecessor ? { predecessorId: predecessor } : {}), ...(tags ? { tagNames: tags.split('\n') } : {}) }, controller.signal);
       } else {
         const card = cards.find(card => card.id === String(values.get('cardId')));
         if (!card) throw new BrowserApiError(422, { code: 'INVALID_INPUT' });
@@ -39,13 +39,14 @@ export function CardWritePanel({ columns, cards, refresh, unauthenticated, forbi
   }
   return <section className="my-6 rounded-xl border border-line bg-white p-5" aria-label="카드 생성과 이동"><ErrorMessage message={error} /><div className="grid gap-8 xl:grid-cols-2">
     <form onSubmit={event => void submit(event, 'create')}><fieldset disabled={busy || columns.length === 0} className="space-y-3 disabled:opacity-60"><legend className="mb-3 font-semibold">카드 만들기</legend>
-      <label className="block text-sm">컬럼<select name="columnId" className={inputClass}>{columns.map(column => <option value={column.id} key={column.id}>{column.title}</option>)}</select></label>
+      <label className="block text-sm">컬럼<select name="columnId" className={inputClass} key={initialColumn} defaultValue={initialColumn}>{columns.map(column => <option value={column.id} key={column.id}>{column.title}</option>)}</select></label>
       <label className="block text-sm">제목<input name="title" required minLength={1} maxLength={120} className={inputClass} /></label>
       <label className="block text-sm">설명<textarea name="description" maxLength={5000} className={inputClass} /></label>
       <label className="block text-sm">마감<input name="dueAt" type="datetime-local" className={inputClass} /></label>
+      <label className="block text-sm">담당자<select name="assigneeId" className={inputClass}><option value="">미지정</option>{members.map((member, index) => <option value={member.userId} key={member.userId}>{member.nickname ?? `이름 없는 멤버 ${index + 1}`} ({member.role})</option>)}</select></label>
       <label className="block text-sm">선행 카드<select name="predecessorId" className={inputClass}><option value="">없음</option>{cards.map(card => <option value={card.id} key={card.id}>{card.title}</option>)}</select></label>
       <label className="block text-sm">태그 (한 줄에 하나)<textarea name="tagNames" className={inputClass} /></label>
-      <p className="text-xs text-muted">선택 목록은 현재 조회한 카드입니다. 담당자 지정은 아직 화면에서 지원하지 않습니다.</p><button className={buttonClass}>{busy ? '저장 중…' : '카드 만들기'}</button>
+      <p className="text-xs text-muted">선행 카드 목록은 현재 조회한 카드입니다.</p><button className={buttonClass}>{busy ? '저장 중…' : '카드 만들기'}</button>
     </fieldset></form>
     <form onSubmit={event => void submit(event, 'move')}><fieldset disabled={busy || cards.length === 0} className="space-y-3 disabled:opacity-60"><legend className="mb-3 font-semibold">카드 이동</legend>
       <label className="block text-sm">카드<select name="cardId" required value={moving} onChange={event => setMoving(event.target.value)} className={inputClass}><option value="">카드 선택</option>{cards.map(card => <option value={card.id} key={card.id}>{card.title}</option>)}</select></label>

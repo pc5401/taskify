@@ -1,6 +1,6 @@
 # Cycle04 멤버 조회·담당자 선행 인수
 
-기준 integration60617aa, 기존 OpenAPI Member/카드 생성의 assigneeId, 부모가 전달한 사용자 승인 Cycle04 범위. 관리자 계약 보완 SHA는 추후 반영한다. 아래 모두 미실행. 브라우저 조작·시각/Figma 확인은 부모 담당, QA는 HTTP·fixture·정적/mock 증거만 독립 기록한다.
+기준 계약83ab6c / 통합27d5c50 (선행60617aa), 기존 OpenAPI Member/카드 생성의 assigneeId, 부모가 전달한 사용자 승인 Cycle04 범위. 멤버 GET401/403/422 선언 반영. joinedAt ASC/userId ASC는 BE의 deterministic 기술 정렬로 검증한다. 아래 모두 미실행. 브라우저 조작·시각/Figma 확인은 부모 담당, QA는 HTTP·fixture·정적/mock 증거만 독립 기록한다.
 
 | 사례 | 인수 문장·요청 | 기대 | 불변 |
 |---|---|---|---|
@@ -13,7 +13,7 @@
 | UI001 | 생성 담당자 dropdown에 실제 board member만, 미지정 옵션 선택 | userId 제출, 미지정null; 표시 nickname은 optional fallback 사용자ID 등 안전표시. 필터는 선택 userId, 카드 담당자 nickname 표시 | client 이메일/credential/token 없음, nicknames를 HTML로 주입하지 않음 |
 | UI002 | 멤버조회 실패/401/403, 생성 실패/중복제출/성공 후 재조회 | 잘못된 담당자 목록으로 성공 처리하지 않음; role 기반 폼+서버 권한; 오류 표시·중복방지·실제 서버 상태 재조회 | stale 다른보드 멤버·카드 노출 없음 |
 
-Member 조회 순서/검색/전체 user directory, role 관리 HTTP를 새 정책으로 추가하지 않는다. 닉네임 absent/null 처리 범위는 실제 계약의 optional schema를 따라 확정한다. 실제 HTTP 통과를 브라우저 dropdown 클릭/시각 통과로 대체하지 않는다.
+조회 순서는 joinedAt ASC/userId ASC의 기술 정렬만 확인하며 검색/전체 user directory, role 관리 HTTP를 새 정책으로 추가하지 않는다. 닉네임 absent/null 처리 범위는 실제 계약의 optional schema를 따라 확정한다. 실제 HTTP 통과를 브라우저 dropdown 클릭/시각 통과로 대체하지 않는다.
 
 ## 브라우저 fixture 계획
 

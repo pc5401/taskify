@@ -1,3 +1,16 @@
+## Cycle04 actual parent browser evidence
+
+TO: manager, qa
+Parent reported owner login → board link → editor-assigned card creation → editor assignee filter PASS. 1440x900 reference colors/sidebar/card geometry and390x844 responsive pageWidth375<=390, dialog internal scroll/close PASS; no current visual defects. These are parent-owned actual browser evidence, distinct from FE mocks/build. Reference/product screenshots reside integration/agents/shared/design-cycle04; final CSS/config production build PASS after parent dev stop.
+
+## 2026-10-13 Cycle04 parent browser handoff
+
+TO: manager, be, qa
+- Members GET type/BFF/browser method, real assignee select/null unset, filter and safe nickname display; no credential/directory exposure or raw UUID assignment UI.
+- QA first79e0c09 and final2d71448 read; source83ab6c2 contract followed. mock23/23,typecheck PASS. production build PASS; last mobile/action CSS awaits parent visual acceptance.
+- Full Figma6:69 original code + parent valid51% canvas screenshot read. Own context/metadata/screenshot each hit Starter limit once. No static asset/Code Connect declared. Scoped colors/geometry corrected, product board color policy unchanged.
+- Creation/move dialog preserves business interactions; current user/sample content uses real data. Mobile sidebar72/dialogscroll; unimplemented nav disabled. Exact creation-dialog/login/myboards Figma source unavailable and no precise-match claim.
+- Parent owns real browser1440x900/390x844 and runtime. Do not count mock/build as click/visual acceptance. See CYCLE04-PREP.md for complete reference/evidence detail.
 ## 2026-10-13 Cycle03 creation/movement handoff
 
 TO: manager, be, qa
@@ -178,3 +191,5 @@ TO: manager
 - 독립 QA 실제 HTTP 읽기 19 PASS는 부모 보고 수신. 브라우저 unavailable이며 SSR shell HTTP와 실제 click/visual 검증을 구분한다. 임시 UI의 Figma 정밀 보정은 후속이다.
 
 Cycle03 final note: production build PASS (including no-op status notice). Subsequent UUID role comparison accepts uppercase UUID with regression mock22/22 + typecheck PASS. Tag blank lines are preserved and server422 applies. Live dev picks up source; actual QA and browser evidence remain separately recorded.
+
+Parent additional actual UI evidence: move/no-op PASS, Viewer login/detail with write0/add0 and assignee filter PASS. Logout keyboard Enter PASS; mouse click was intercepted by Next default development badge. Installed Next devIndicators docs read and next.config.ts devIndicators:false added. Parent final mouse click recheck remains pending.

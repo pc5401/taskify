@@ -15,6 +15,7 @@ export interface Board {
 /** Caller membership, only guaranteed on list items; never a stored Board field. */
 export interface BoardListItem extends Board { myRole: Role }
 export interface BoardPage { items: BoardListItem[]; nextCursor: string | null }
+export interface Member { userId: string; role: Role; joinedAt: string; nickname?: string }
 export interface Column {
   id: string;
   boardId: string;

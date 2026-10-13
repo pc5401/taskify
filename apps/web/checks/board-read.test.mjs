@@ -19,7 +19,7 @@ test('UI and BFF reject non-digit raw limits before numeric conversion',()=>{
  assert.deepEqual(parseBoardFilters(new URLSearchParams('tag=%20Alpha%20')), {tag:' Alpha '});
 });
 test('BFF only fixed UUID read targets, rejects path injection and mutations',async()=>{
- for(const target of ['/boards/not-uuid',`${path}/../me`,`${path}?evil=1`,`${path}/members`,`${path}/cards/extra`]) assert.equal(readTarget(new Request('http://web.test/api/x'),target).status,422);
+ for(const target of ['/boards/not-uuid',`${path}/../me`,`${path}?evil=1`,`${path}/members/extra`,`${path}/cards/extra`]) assert.equal(readTarget(new Request('http://web.test/api/x'),target).status,422);
  assert.equal(readTarget(new Request('http://web.test/api/x',{method:'POST'}),path).status,405);
  const store={locked:async()=>{throw Error('must not touch store');}};
  const invalid=await new Bff({key,origin:'http://web.test',apiBase:'http://api.test/v1',production:false},store,async()=>{throw Error('must not fetch');}).handle(new Request('http://web.test/api/x'),'/boards/invalid');assert.equal(invalid.status,422);
@@ -84,4 +84,16 @@ test('browser writes preserve optional raw fields, quoted If-Match, response ETa
  assert.equal((await api.moveCard(id,{toColumnId:other,beforeCardId:null},'"7"')).card.version,7);
  assert.equal(await api.boardRole(id),'VIEWER');assert.equal(calls,4);
  const upper=createBrowserApi(async()=>Response.json({items:[{id:'abcdefab-0000-4000-8000-000000000001',myRole:'EDITOR'}],nextCursor:null}));assert.equal(await upper.boardRole('ABCDEFAB-0000-4000-8000-000000000001'),'EDITOR');
+});
+
+
+test('members read uses fixed GET target, preserves public projection and failures',async()=>{
+ const member={userId:other,role:'VIEWER',joinedAt:'2026-10-13T00:00:00Z',nickname:'<safe name>'};
+ assert.equal(readTarget(new Request('http://web.test/api/x?extra=ignored'),`${path}/members`),`${path}/members`);
+ assert.equal(readTarget(new Request('http://web.test/api/x',{method:'POST'}),`${path}/members`).status,405);
+ const store={locked:async(_hash,run)=>run({encrypted_tokens:encrypt({accessToken:'server-token',refreshToken:'server-refresh'},key,hash),expires_at:new Date(Date.now()+60000),revoked_at:null},{save:async()=>{},revoke:async()=>{}})};
+ const app=new Bff({key,origin:'http://web.test',apiBase:'http://api.test/v1',production:false},store,async(url,init)=>{assert.equal(url,`http://api.test/v1${path}/members`);assert.equal(init.headers.get('authorization'),'Bearer server-token');return Response.json({items:[member]});});
+ const response=await app.handle(new Request('http://web.test/api/x',{headers:{cookie:`taskify_session=${cookie}`}}),`${path}/members`);assert.deepEqual(await response.json(),{items:[member]});
+ const api=createBrowserApi(async(url,init)=>{assert.equal(url,`/api${path}/members`);assert.equal(init.credentials,'same-origin');return Response.json({items:[member]});});assert.deepEqual(await api.members(id),{items:[member]});
+ const denied=createBrowserApi(async()=>Response.json({code:'NOT_MEMBER'},{status:403}));await assert.rejects(denied.members(id),error=>error.status===403 && error.body.code==='NOT_MEMBER');
 });

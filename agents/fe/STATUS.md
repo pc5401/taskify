@@ -1,10 +1,9 @@
 # FE STATUS
 
-Cycle03 card creation/movement implemented; production build PASS.
-- integration6528fea, approved contract64f7ae9, QA first6e3b8e9 + final8d9294d read/merged.
-- Two fixed UUID POST BFF routes reuse Origin/cookie/token/If-Match/ETag behavior.
-- Browser client all optional fields, public Card+ETag envelope, all-page myRole lookup.
-- Temporary create/move forms, duplicate guard, latest-server refresh, 409/422/428/401/403 handling.
-- Viewer controls hidden; server authorizes final. No member-search invention or card PATCH/delete.
-- mock22/22 and typecheck PASS. Parent handles runtime/actual QA; no new live claim.
-- User-approved temporary UI, Figma correction and actual visual/click acceptance pending.
+Cycle04 members/assignee and source-based board correction parent browser review PASS; final CSS/config production build PASS; logout click recheck pending.
+- QA first read; member type/GETBFF/browser/select/filter/nickname connected.
+- Full parent Figma6:69 code and valid canvas image read; static glyphs/no asset substitution.
+- Scoped visual brand leaves board color policy unchanged. Dark sidebar/columns/cards source geometry applied.
+- Existing create/move dialog and version/error/duplicate guard retained; responsive sidebar/dialog CSS.
+- mock23/23,typecheck,production build PASS. Parent actual owner login/board/create-editor-assignee/filter PASS; desktop1440x900/mobile390x844 visual and dialog scrolling/close PASS. Last CSS/config production build PASS.
+- Parent only browser operator. Login/myboards/create dialog exact Figma fidelity unclaimed.

@@ -1,4 +1,4 @@
-import type { Board, BoardPage, ApiErrorBody, Column, Card, CardPage } from './contract.ts';
+import type { Board, BoardPage, ApiErrorBody, Column, Card, CardPage, Member } from './contract.ts';
 export interface CardFilters { columnId?: string; assigneeId?: string; tag?: string; limit?: number }
 export class CardPaginationError extends Error {}
 export interface User { id: string; email: string; nickname: string; createdAt: string; avatarUrl?: string | null }
@@ -69,6 +69,7 @@ export function createBrowserApi(fetcher: typeof fetch = fetch) {
     },
     board: (boardId: string, signal?: AbortSignal) => request<Board>(`/boards/${encodeURIComponent(boardId)}`, 'GET', undefined, signal),
     columns: (boardId: string, signal?: AbortSignal) => request<{ items: Column[] }>(`/boards/${encodeURIComponent(boardId)}/columns`, 'GET', undefined, signal),
+    members: (boardId: string, signal?: AbortSignal) => request<{ items: Member[] }>(`/boards/${encodeURIComponent(boardId)}/members`, 'GET', undefined, signal),
     cardPage,
     allCards: async (boardId: string, filters: CardFilters = {}, signal?: AbortSignal): Promise<Card[]> => {
       const items: Card[] = [], ids = new Set<string>(), cursors = new Set<string>();
