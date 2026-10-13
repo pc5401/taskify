@@ -11,3 +11,26 @@ body { font-family: Arial, "Noto Sans KR", sans-serif; color: var(--color-ink); 
 button, a, input, textarea { outline-offset: 4px; }
 button:not(:disabled), a { cursor: pointer; }
 button:disabled { cursor: wait; }
+
+/* Figma 6:69 visual tokens are scoped; product board color default is unchanged. */
+.board-design { --color-brand: #6958e8; --color-brand-light: #f0edff; --color-ink: #243047; --color-muted: #69768c; --color-line: #e2e7f0; --color-canvas: #f6f8fc; color: var(--color-ink); background: var(--color-canvas); }
+.board-sidebar { background: #18223a; }
+.board-design button:disabled { cursor: not-allowed; }
+.board-filters select, .board-filters input:not([type=checkbox]) { width: auto; min-width: 110px; padding: 6px 10px; margin-top: 4px; font-size: 13px; }
+.board-filters label { font-size: 13px; }
+.board-filters button { padding: 8px 14px; font-size: 13px; }
+.board-write-dialog { width: min(960px, calc(100% - 32px)); max-height: calc(100vh - 48px); margin: auto; border: 1px solid #e2e7f0; }
+.board-write-dialog::backdrop { background: rgb(24 34 58 / .48); }
+.board-write-dialog { overflow-y: auto; }
+@media (max-width: 1023px) {
+  .board-sidebar { min-height: 72px; padding: 20px 24px; flex-direction: row; align-items: center; justify-content: space-between; }
+  .board-sidebar nav, .board-sidebar > div { display: none; }
+  .board-sidebar > p:last-child { margin: 0; font-size: 12px; }
+  .board-write-dialog { max-height: calc(100dvh - 24px); width: calc(100% - 24px); padding: 16px; }
+}
+.board-actions { position: absolute; right: 46px; top: 45px; font-size: 13px; padding: 10px 14px; }
+.board-filters label { display: flex; align-items: center; gap: 8px; }
+.board-filters select, .board-filters input:not([type=checkbox]) { margin-top: 0; }
+@media (max-width: 767px) {
+  .board-actions { position: static; margin-bottom: 16px; }
+}

@@ -254,3 +254,26 @@ actual QA evidence are recorded in agents/fe/OUTBOX.md.
 
 Tag text is split on newline without trimming; blank lines are empty tag items and receive the server's 422 validation error. The UI does not silently remove them. UUID case is ignored only for membership identity lookup; email and tag strings remain untouched.
 The production build passed with the new routes/UI; the subsequent UUID-case comparison regression passed mock22/22 and typecheck.
+
+## Cycle04 members and board reference correction
+
+GET /api/boards/:boardId/members returns the contract public Member projection.
+Create forms now offer actual board members and unset null; cards show optional
+nickname safely, and member dropdown filters submit assigneeId. Loading/401/403
+errors prevent stale member-backed forms. There is no new directory endpoint.
+
+Board-detail Figma6:69 full original context and a valid parent Figma canvas
+screenshot informed scoped colors,230px dark sidebar,72px topbar,46px content,
+316px columns/14px gaps and288px cards. Visual brand6958e8 is presentation only;
+product board default5534DA is unchanged. Original glyphs are text; no static
+image/SVG assets were provided. Functional filters and native create/move dialog
+extend the static reference. Mobile sidebar collapses and dialog scrolls within
+viewport. Parent handles desktop/mobile actual visual and click acceptance.
+
+Exact login/myboards/create-dialog source is unavailable at current MCP limit;
+those screens are not claimed as precise Figma reproductions. Current mock23/23,
+typecheck and production-build evidence is distinct from browser acceptance.
+
+Parent actual browser evidence: owner login, board link, editor-assigned create, editor filter PASS;1440x900 source comparison and390x844 mobile width/dialog scroll/close PASS. This is recorded separately from mock23/typecheck/build.
+
+Development indicators are disabled because the default bottom-left badge overlapped logout during actual mouse-click testing. Compile/runtime error reporting remains enabled. Parent move/no-op and Viewer read/write-hidden/filter tests passed; logout mouse recheck follows rebuild.

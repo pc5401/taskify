@@ -1,6 +1,6 @@
 export type BffPath = '/auth/login' | '/auth/register' | '/auth/logout' | '/me' | '/boards' | `/boards/${string}` | `/columns/${string}/cards` | `/cards/${string}/move`;
 export const boardUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const boardReadPath = /^\/boards\/([0-9a-fA-F-]+)(?:\/(columns|cards))?$/;
+const boardReadPath = /^\/boards\/([0-9a-fA-F-]+)(?:\/(columns|cards|members))?$/;
 /** Only fixed read routes and their contract query keys may reach Nest. */
 export function readTarget(request: Request, path: BffPath): string | Response {
   if (path.startsWith('/columns/') || path.startsWith('/cards/')) {
