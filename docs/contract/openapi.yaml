@@ -303,6 +303,12 @@ paths:
                     items:
                       $ref: '#/components/schemas/Member'
           description: Members of the board.
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/NotMember'
+        '422':
+          $ref: '#/components/responses/InvalidInput'
   /boards/{boardId}/members/{userId}:
     parameters:
       - $ref: '#/components/parameters/boardId'
